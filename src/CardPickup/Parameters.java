@@ -14,6 +14,11 @@ public class Parameters {
     public static int MAX_NEIGHBORS = 4;
     /**Identifies the minimum number of neighbors in an initial graph for non-router nodes*/
     public static int MIN_NEIGHBORS = 1;
+    /**Identifies the number of possible cards in the uncertain graph*/
+    public static int NUM_POSSIBLE_CARDS = 4;
+    /**Identifies the number of turns (both players moving is a turn)*/
+    public static int NUM_TURNS = 7;
+
     /**The maximum PointValue*/
     public static int MAX_POINT_VALUE = 20;
     /**The maximum number of router edges*/

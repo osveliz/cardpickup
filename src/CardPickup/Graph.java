@@ -243,26 +243,26 @@ public class Graph {
 	}
 
 	/**
-     * Print network in a file
+     * Print graph in a file
+     * @param usePossibleCardSet when true saves to name.hidden and saves the possible card set instead of the card
      */
-	public void saveNetwork()
+	public void saveGraph(boolean usePossibleCardSet)
 	{
 		PrintWriter writer;
 		try {
-			writer = new PrintWriter(fullGraphName + ".graph", "UTF-8");
-			for (int i = 0; i < nodes.length; i++)
-			{
+            if(usePossibleCardSet)
+                writer = new PrintWriter(fullGraphName + ".hidden", "UTF-8");
+            else
+			    writer = new PrintWriter(fullGraphName + ".graph", "UTF-8");
+			for (int i = 0; i < nodes.length; i++) {
 				Node node = getNode(i);
 				int neighborSize = node.neighbor.size();
 				int neighborCounter = 0;
 				if (node.neighbor.get(0) == null)
 					writer.print("-1");
-				else
-				{
-					for(Node neighbor: node.neighbor)
-					{
-						if(neighbor.getNodeID()!=node.getNodeID())
-						{
+				else {
+					for(Node neighbor: node.neighbor) {
+						if(neighbor.getNodeID()!=node.getNodeID()) {
 							if(neighborCounter==neighborSize-1)
 								writer.print(neighbor.getNodeID());
 							else 
@@ -273,23 +273,32 @@ public class Graph {
 				}
 				writer.println();
 			}
-			for (int i = 0; i < nodes.length; i++)
-			{
+			for (int i = 0; i < nodes.length; i++) {
 				Node node = getNode(i);
                 //writer.println(node.getPv()+","+node.getSv()+","+node.getHoneyPot());
-                writer.println(node.getCard());
+                if(usePossibleCardSet){
+                    ArrayList<Card> cards = node.getPossibleCards();
+                    writer.print(cards.get(0));
+                    for(int c = 1; c < cards.size();c++)
+                        writer.print(","+cards.get(c));
+                    writer.println();
+                }
+                else
+                    writer.println(node.getCard());
 			}
 			writer.close();
 		}
-		catch (FileNotFoundException e)
-		{
+		catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		catch ( Exception e)
-		{
+		catch ( Exception e) {
 			e.printStackTrace();
 		}
 	}
+
+    public void saveGraph(){
+        saveGraph(false);
+    }
 	
 	/**
      * Shuffles all the nodes in the network
@@ -493,6 +502,9 @@ public class Graph {
         //deal as many cards as possible to network
         for(int i = 0; i < nodes.length; i++){
             nodes[i].setCard(deck.remove(0));
+            for(int p = 1; p < Parameters.NUM_POSSIBLE_CARDS; p++)
+                nodes[i].addPossible(new Card(r.nextInt(13)+1,r.nextInt(4)+1));
+            nodes[i].shufflePossibleCards();
         }
 
         //I think this code was a failsafe to make sure that nodes were connected.

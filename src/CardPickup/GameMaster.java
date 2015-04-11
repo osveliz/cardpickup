@@ -124,7 +124,8 @@ public class GameMaster {
 	public static void generateGraphs(int numGraphs) {
 		for (int i = 0; i < numGraphs; i++) {
 			Graph n = new Graph(i);
-			n.saveNetwork();
+			n.saveGraph();
+            n.saveGraph(true);
 		}
 	}
 

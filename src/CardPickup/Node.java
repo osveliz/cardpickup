@@ -1,6 +1,7 @@
 package CardPickup;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Node class is used for creating nodes for the network.
@@ -74,6 +75,7 @@ public class Node
     public Node(int id, Card c){
         nodeID = id;
         card = c;
+        possibleCards = new ArrayList<Card>();
     }
 
     /**
@@ -331,10 +333,29 @@ public class Node
     public void setCard(Card c)
     {
         card = c;
+        addPossible(c);
     }
 
     public Card getCard(){
         return card;
+    }
+
+    public ArrayList<Card> getPossibleCards(){
+        return possibleCards;
+    }
+
+    public void addPossible(Card c) {
+        if(possibleCards==null)
+            possibleCards = new ArrayList<Card>();
+        possibleCards.add(c);
+    }
+
+    public void shufflePossibleCards(){
+        Random r = new Random();
+        for(int i = 0; i < 100; i++){
+            int index = r.nextInt(possibleCards.size());
+            possibleCards.add(possibleCards.remove(index));
+        }
     }
 
 }
