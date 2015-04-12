@@ -33,7 +33,7 @@ public class Graph {
 			nodes[i] = new Node();
 			nodes[i].setNodeID(i);
 		}
-		generateNetwork();
+		//generateNetwork();
 	}
 
 	 /**

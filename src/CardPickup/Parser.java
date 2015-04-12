@@ -21,8 +21,11 @@ public class Parser
 	public static Graph parseGraph(String filename)
 	{
 		boolean deleteJunkFile = false;
+        boolean usePossibleCardSet = false;
 		try 
 		{
+            if(filename.endsWith(".hidden"))
+                usePossibleCardSet = true;
 			File gFile = new File(filename);
 			if(!gFile.exists()){
 				gFile.createNewFile();
@@ -33,7 +36,7 @@ public class Parser
 			int neighborsCounter = 0;
 			int numNodes = parseRecords.getRecords().size()/2;
             //Graph graph = new Graph(0,numNodes);
-            Graph graph = new Graph(0);
+            Graph graph = new Graph(-1);
             graph.setName(filename.substring(0,filename.indexOf(".")));
 			boolean flag = false;
 			for (CSVRecord csvRecord : parser) 
@@ -41,12 +44,12 @@ public class Parser
 				Iterator<String> itr = csvRecord.iterator();
 				if((neighborsCounter<numNodes) && flag==false)
 				{
-					CardPickup.Node node = graph.getNode(neighborsCounter);
+					Node node = graph.getNode(neighborsCounter);
 					while(itr.hasNext())
 					{
 						int x = Integer.parseInt(itr.next());
 						if(x >= 0){
-							CardPickup.Node neighbor = graph.getNode(x);
+							Node neighbor = graph.getNode(x);
 							node.addNeighbor(neighbor);
 						}
 					}
@@ -60,15 +63,20 @@ public class Parser
 				}
 				else if(flag && (neighborsCounter<numNodes))
 				{
-					CardPickup.Node node = graph.getNode(neighborsCounter);
-					while(itr.hasNext())
+					Node node = graph.getNode(neighborsCounter);
+					//while(itr.hasNext())
 					{
-						int x  = Integer.parseInt(itr.next());
+						/*int x  = Integer.parseInt(itr.next());
 						node.setPv(x);
 						int y = Integer.parseInt(itr.next());
 						node.setSv(y);
 						int z = Integer.parseInt(itr.next());
-						node.setHoneyPot(z);
+						node.setHoneyPot(z);*/
+                        if(usePossibleCardSet)
+                            for(int i = 0; i < Parameters.NUM_POSSIBLE_CARDS; i++)
+                                node.addPossible(new Card(itr.next()));
+                        else
+                            node.setCard(new Card(itr.next()));
 					}
 					neighborsCounter++;
 				}

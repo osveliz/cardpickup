@@ -1,5 +1,7 @@
 package CardPickup;
 
+import java.util.ArrayList;
+
 /**
  * Pits Attacker and Defender agents against one another in the name of Science!
  * 
@@ -113,6 +115,14 @@ public class GameMaster {
 		// perform analysis
 		Analyzer analyzer = new Analyzer(points, attackerNames, defenderNames);
 		analyzer.savePoints(p);*/
+        Parser parser = new Parser();
+        Graph g = Parser.parseGraph("0.graph");
+        for(int i = 0; i < g.getSize(); i++) {
+            System.out.println("node "+i);
+            ArrayList<Card> cards = g.getNode(i).getPossibleCards();
+            for(int c = 0; c < cards.size();c++)
+                System.out.println(cards.get(c).toString());
+        }
         System.exit(0);
     }
 	/**
@@ -124,6 +134,7 @@ public class GameMaster {
 	public static void generateGraphs(int numGraphs) {
 		for (int i = 0; i < numGraphs; i++) {
 			Graph n = new Graph(i);
+            n.generateNetwork();
 			n.saveGraph();
             n.saveGraph(true);
 		}
