@@ -573,4 +573,26 @@ public class Graph {
 		}
 		return availableNodes;
 	}
+
+    /**
+     * Returns a copy of the graph
+     * @return a copy of the graph
+     */
+    public Graph copy(){
+        Graph g = new Graph(-1);
+        g.setName("copy");
+        for(int i = 0; i < this.getSize(); i++){
+            Node original = this.getNode(i);
+            Node copy = g.getNode(i);
+            //add neighbors
+            ArrayList<Node> originalNeighbors = original.getNeighborList();
+            for(int r = 0; r < originalNeighbors.size(); r++)
+                copy.addNeighbor(g.getNode(originalNeighbors.get(r).getNodeID()));
+            //add possible cards
+            ArrayList<Card> originalCards = original.getPossibleCards();
+            for(int r = 0; r < originalCards.size(); r++)
+                copy.addPossible(new Card(originalCards.get(r).toString()));
+        }
+        return g;
+    }
 }
