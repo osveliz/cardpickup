@@ -116,7 +116,9 @@ public class GameMaster {
 		Analyzer analyzer = new Analyzer(points, attackerNames, defenderNames);
 		analyzer.savePoints(p);*/
         Parser parser = new Parser();
-        Graph g = Parser.parseGraph("0.hidden");
+
+
+        /*Graph g = Parser.parseGraph("0.hidden");
         for(int i = 0; i < g.getSize(); i++) {
             System.out.println("node "+i);
             ArrayList<Card> cards = g.getNode(i).getPossibleCards();
@@ -124,7 +126,7 @@ public class GameMaster {
                 System.out.println(cards.get(c).toString());
         }
         Graph copy = g.copy();
-        copy.saveGraph(true);
+        copy.saveGraph(true);*/
         System.exit(0);
     }
 	/**
