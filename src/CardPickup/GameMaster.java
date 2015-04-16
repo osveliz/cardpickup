@@ -5,18 +5,16 @@ import java.util.ArrayList;
 /**
  * Pits Attacker and Defender agents against one another in the name of Science!
  * 
- * STUDENTS: add your defenders and attackers to the sections in main that say
- * "add defenders here" and "add attackers here" Also add your defender to the
- * method getDefenderByName() and your attacker to getAttackerByName() You may
- * also edit the rates in the Parameters class. Trust that these rates will be
- * changed when the full tournament is run.
+ * STUDENTS: add your Player to the sections in main that say  "add Players here".
+ * Also add your defender to the getPlayer() method.
+ * You may also want to edit the Parameters in the changeParameters() method when testing.
+ * Trust that these values will be changed when the full tournament is run.
  * 
  * @author Marcus Gutierrez and Oscar Veliz
  * @version 2014/15/14
  */
 public class GameMaster {
-	
-	//private static int gameID = 0;
+
 	private static boolean verbose = true; //Set to false if you do not want much detail printed to console
 
 	/**
@@ -30,32 +28,24 @@ public class GameMaster {
 	 */
 	public static void initializePlayers(Graph g, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2, int gameSeed){
 		//Player 1
-        //Hand p1Hand = Parser.parseHand(gameSeed,1);
-		//p1.setGraph(g.generateHiddenGraph());
         p1.setGraph(Parser.parseGraph(gameSeed+".hidden").generateHiddenGraph());
-		//p1Profile.setCurrentHand(g.getHand(0));
         p1Profile.setCurrentHand(Parser.parseHand(gameSeed,1));//player 1
 		p1Profile.setCurrentLocation(0);
 		//Update the player 1
-		//p1.setHand(g.getHand(0));
         p1.setHand(Parser.parseHand(gameSeed,1));
 		p1.setCurrentNode(p1Profile.getCurrentLocation());
 		
 		//Player 2
-        //Hand p2Hand = Parser.parseHand(gameSeed, 2);
 		p2.setGraph(g.generateHiddenGraph());
-		//p2Profile.setCurrentHand(g.getHand(1));
         p2Profile.setCurrentHand(Parser.parseHand(gameSeed, 2));
 		p2Profile.setCurrentLocation(1);
 		//Update the player 2
-		//p2.setHand(g.getHand(1));
         p2.setHand(Parser.parseHand(gameSeed, 2));
 		p2.setCurrentNode(p2Profile.getCurrentLocation());
 		
 		//Notify players of their opponent
 		p1.setOpponentNode(p2Profile.getCurrentLocation());	//subject to change
 		p2.setOpponentNode(p1Profile.getCurrentLocation());	//subject to change
-		
 	}
 
 	/**
@@ -136,16 +126,14 @@ public class GameMaster {
 
 	/**
 	 * Should only be called by runMatches() as that method has the necessary initializations to run this method
-     * It expects g.generateNetwork() to have been called before running this method
-	 * @param g The graph the players will be playing on. Should already be initialized by this point.
+     * It expects generateNetwork() to have been called before running this method
 	 * @param p1 The player that will move first
 	 * @param p2 The player that will move second
      * @param gameSeed game seed
 	 */
-	private static void oneRound(GameProfile gp, Graph g, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2, int gameSeed){
-		//Node[] graph = g.generateCopyGraph();
+	private static void oneRound(GameProfile gp, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2, int gameSeed){
         Node[] graph = Parser.parseGraph(gameSeed+".graph").getNodes();
-        g = Parser.parseGraph(gameSeed+".graph");
+        Graph g = Parser.parseGraph(gameSeed+".graph");
 		initializePlayers(g, p1Profile, p1, p2Profile, p2,gameSeed);
 		boolean p1Finished;
 		boolean p2Finished;
@@ -199,17 +187,14 @@ public class GameMaster {
 			//Game initialization
 			Player p1 = getPlayer(p1Name);
 			Player p2 = getPlayer(p2Name);
-			//Graph g = new Graph(gameSeed);
             Graph g = Parser.parseGraph(gameSeed+".graph");
-			//g.generateNetwork();
-			//g.saveGraph();
-			
+
 			//Profile initialization
 			PlayerProfile p1Profile = new PlayerProfile(p1.getName());
 			PlayerProfile p2Profile = new PlayerProfile(p2.getName());
 			GameProfile gp = new GameProfile(g, gameSeed, p1Profile, p2Profile,i); //Establish a game profile to store all information
 			
-			oneRound(gp, g, p1Profile, p1, p2Profile, p2,gameSeed);
+			oneRound(gp, p1Profile, p1, p2Profile, p2,gameSeed);
 			
 			/////////////////////////////////////////////////////////////////////////////
 			//Exact same code as above, but reverses the roles of player 1 and player 2//
@@ -217,8 +202,6 @@ public class GameMaster {
 			//Game initialization
 			p1 = getPlayer(p2Name);
 			p2 = getPlayer(p1Name);
-			//g = new Graph(gameSeed);
-			//g.generateNetwork();
             g = Parser.parseGraph(gameSeed+".graph");
 			
 			//Profile initialization
@@ -226,7 +209,7 @@ public class GameMaster {
 			p2Profile = new PlayerProfile(p2.getName());
 			gp = new GameProfile(g, gameSeed, p1Profile, p2Profile, i+1); //Establish a game profile to store all information
 			
-			oneRound(gp, g, p1Profile, p1, p2Profile, p2,gameSeed);
+			oneRound(gp, p1Profile, p1, p2Profile, p2,gameSeed);
 		}
 	}
 
@@ -287,12 +270,11 @@ public class GameMaster {
 	}
 
 	private static void changeParameters(int x){
-		switch (x)
-		{
+		switch (x) {
             case 0://smallish graph
-                Parameters.NUMBER_OF_NODES = 10;
-                Parameters.MAX_NEIGHBORS = 4;
-                Parameters.MIN_NEIGHBORS = 2;
+                Parameters.NUMBER_OF_NODES = 8;
+                Parameters.MAX_NEIGHBORS = 3;
+                Parameters.MIN_NEIGHBORS = 1;
                 Parameters.NUM_POSSIBLE_CARDS = 4;
                 Parameters.NUM_TURNS = 8;
                 break;

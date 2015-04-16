@@ -9,9 +9,13 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+/**
+ * Make sure you add the CSV jar to your library. Should work already if you're using ant.
+ * @author Porag (original), Oscar (updated)
+ */
+
 public class Parser
 {
-	
 	/**
 	 * Given a .graph file, a network is generated following a predetermined format
 	 * 
@@ -118,5 +122,4 @@ public class Parser
         }
         return h;
     }
-	
 }

@@ -1,6 +1,6 @@
 package CardPickup;
 /**
- * Defines constant variables used in simulation
+ * Defines parameter variables used in simulation
  */
 
 public class Parameters {

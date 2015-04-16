@@ -1,7 +1,7 @@
 package CardPickup;
 
 /**
- * Auxiliary class for storing information about the game?
+ * Auxiliary class for storing information about the game.
  * @author Marcus Gutierrez
  */
 public class GameProfile {

@@ -23,8 +23,7 @@ import java.util.Random;
 public class Node 
 {
 	private int nodeID;
-	private int neighborAmount = -1;
-	public ArrayList<Node> neighbor = new ArrayList<Node>();
+    public ArrayList<Node> neighbor = new ArrayList<Node>();
     private Card trueCard;
     private ArrayList<Card> possibleCards;
     
@@ -56,8 +55,8 @@ public class Node
 
     /**
      * Constructor for adding possible cards
-     * @param id
-     * @param cards
+     * @param id node id
+     * @param cards possible cards
      */
     public Node(int id, ArrayList<Card> cards){
         nodeID = id;
@@ -94,15 +93,6 @@ public class Node
     public int getNeighborAmount(){
         return neighbor.size();
     }
-
-	
-	/**
-	 * sets this.neighborAmount attribute
-	 * @param amt new neighbor amount
-	 */
-	public void setNeighborAmount(int amt){
-		neighborAmount = amt;
-	}
 	
 	/**
      * Add Neighbor to the current node
@@ -111,8 +101,7 @@ public class Node
 	public void addNeighbor(Node neighborNode)
 	{
 		if(!neighbor.contains(neighborNode)){
-			neighborAmount++;
-			this.neighbor.add(neighborNode);
+            this.neighbor.add(neighborNode);
 		}
 	}
 
@@ -136,56 +125,80 @@ public class Node
 	
 	/**
 	 * Overridden equals method that just compares NodeID
+     * @param o Checks if two id's are the same when o is a Node type
 	 */
-	public final boolean equals(Object o){
-		Node n = (Node)o;
-		if(n.getNodeID() == nodeID)
-			return true;
-		return false;
-	}
+	public final boolean equals(Node o){
+        return o.getNodeID() == nodeID;
+    }
 
+    /**
+     * Stores card c as the true card. Adds c to the set of possible cards.
+     * @param c card to set
+     */
     public void setCard(Card c)
     {
         trueCard = c;
         addPossible(c);
     }
 
+    /**
+     * Returns the true card. Not useful if you're not supposed to know what the card is.
+     * @return the true card if you're in the know
+     */
     public Card getCard(){
         return new Card(trueCard.toString());
     }
 
+    /**
+     * Returns the set of possible cards
+     * @return the set of possible cards
+     */
     public ArrayList<Card> getPossibleCards(){
         return possibleCards;
     }
-    
+
+    /**
+     * Sets the set of possible cards to null
+     */
     public void clearPossibleCards(){
     	possibleCards = new ArrayList<Card>(); //resets size to 0
     }
-    
-    public Node clone(){
+
+    /**
+     * A version of clone but named so your IDE doesn't complain about it not being a traditional clone method.
+     * @return a clone of the Node
+     */
+    public Node copyNode(){
     	Node n = new Node(nodeID, new Card(trueCard.toString()));
-    	for(int i = 0; i < possibleCards.size(); i++)
-    		n.addPossible(new Card(possibleCards.get(i).toString()));
+        for (Card possibleCard : possibleCards)
+            n.addPossible(new Card(possibleCard.toString()));
     	return n;
     }
     
     /**
      * This method will be used to show the players a node without revealing the true card
-     * @return
+     * @return a new node with just the possible cards
      */
     public Node getHiddenNode(){
     	Node n = new Node(nodeID);
-    	for(int i = 0; i < possibleCards.size(); i++)
-    		n.addPossible(new Card(possibleCards.get(i).toString()));
+        for (Card possibleCard : possibleCards)
+            n.addPossible(new Card(possibleCard.toString()));
     	return n;
     }
 
+    /**
+     * Adds card c to the set of possible cards
+     * @param c the card to be added to the set of possible cards
+     */
     public void addPossible(Card c) {
         if(possibleCards == null)
             possibleCards = new ArrayList<Card>();
         possibleCards.add(new Card(c.toString()));
     }
 
+    /**
+     * Method that will shuffle the possible cards otherwise the true card would always be the first one
+     */
     public void shufflePossibleCards(){
         Random r = new Random();
         for(int i = 0; i < 100; i++){

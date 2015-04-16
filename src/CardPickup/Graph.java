@@ -411,7 +411,7 @@ public class Graph {
 		//if(graphGenerated){
 			Node[] graph = new Node[nodes.length];
 			for(int i = 0; i < nodes.length; i++){
-				graph[i] = nodes[i].clone();
+				graph[i] = nodes[i].copyNode();
 			}
 			for(int i = 0; i < nodes.length; i++){
 				for(int j = 0; j < nodes[i].getNeighborAmount(); j++){

@@ -55,7 +55,7 @@ public class TestPlayer extends Player{
 	@Override
 	public Action makeAction() {
 		Random r = new Random();
-        int neighbor = 0;
+        int neighbor;
         if (graph[currentNode].getNeighborAmount()==1)
             neighbor = graph[currentNode].getNeighbor(0).getNodeID();
         else
