@@ -9,8 +9,8 @@ package CardPickup;
  * also edit the rates in the Parameters class. Trust that these rates will be
  * changed when the full tournament is run.
  * 
- * @author Oscar Veliz, Porag Chowdhury, Anjon Basak, Marcus Gutierrez
- * @version 2014/11/14
+ * @author Marcus Gutierrez and Oscar Veliz
+ * @version 2014/15/14
  */
 public class GameMaster {
 	
@@ -19,6 +19,11 @@ public class GameMaster {
 
 	/**
 	 * Initializes each player and each player profile with all the relevant knowledge needed to start a game
+     * @param g copy of graph
+     * @param p1Profile profile for player 1
+     * @param p1 player 1
+     * @param p2Profile profile for player 2
+     * @param p2 player 2
 	 */
 	public void initializePlayers(Graph g, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2){
 		//Player 1
@@ -60,8 +65,10 @@ public class GameMaster {
 
 	/**
 	 * Makes necessary changes to local version of the graph and notifies/updates the current and opponent player
-	 * @param graph The current graph of the current game
-	 * @param current The player who made an action
+	 * @param graph vector of nodes in the graph
+	 * @param cpProfile profile for the current player
+     * @param currentPlayer current player
+     * @param opponent opposing player
 	 */
 	private void registerTurn(Node[] graph, PlayerProfile cpProfile, Player currentPlayer, Player opponent){
 		Action a = currentPlayer.getLastAction();
@@ -116,22 +123,19 @@ public class GameMaster {
 		}
 		return false;
 	}
-	
-	
+
 	/**
 	 * Should only be called by runMatches() as that method has the necessary initializations to run this method
+     * It expects g.generateNetwork() to have been called before running this method
 	 * @param g The graph the players will be playing on. Should already be initialized by this point.
 	 * @param p1 The player that will move first
 	 * @param p2 The player that will move second
 	 */
 	private void oneRound(GameProfile gp, Graph g, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2){
-		//g.generateNetwork() should have been called before this game
 		Node[] graph = g.generateCopyGraph();
-
 		initializePlayers(g, p1Profile, p1, p2Profile, p2);
-
-		boolean p1Finished = false;
-		boolean p2Finished = false;
+		boolean p1Finished;
+		boolean p2Finished;
 		//Runs until both players have a full hand or are out of turns
 		if(verbose)System.out.println("Game " + Integer.toString(gameID-1) + " starting...");
 		for(int i = 0; i < Parameters.NUM_TURNS; i++){
@@ -167,10 +171,9 @@ public class GameMaster {
 	 * Runs a specified number of matches on the same graph against two players. One match is
 	 * considered 2 rounds where the second round reverses the locations and hands of the 2 players.
 	 * @param matchAmt Number of matches to play
-	 * @param g The graph that the players will play on
-	 * @param gameSeed The seed that is used to create the graph
-	 * @param p1 The player that will act first in the first round of a match (will act as player 2 in the second round)
-	 * @param p2 The player that will act second in the first round of a match (will act as player 1 in the first round)
+	 * @param gameSeed number representing the seed used to generate the graph
+	 * @param p1Name The player that will act first in the first round of a match (will act as player 2 in the second round)
+	 * @param p2Name The player that will act second in the first round of a match (will act as player 1 in the first round)
 	 */
 	public void runMatches(int matchAmt, int gameSeed, String p1Name, String p2Name){
 		if(getPlayer(p1Name) == null || getPlayer(p2Name) == null){
@@ -218,13 +221,13 @@ public class GameMaster {
 	 * @param args not using any command line arguments
 	 */
 	public static void main(String[] args) {
-		//int numGames = 2;
-		//int p = 5;
-		//changeParameters(p);
-		//generateGraphs(numGames);
+		int numGames = 5;
+		int parameterSetting = 2;
+		changeParameters(parameterSetting);
+		generateGraphs(numGames);
 
 		GameMaster gm = new GameMaster();
-		gm.runMatches(1, 0, "TestPlayer", "TestPlayer");
+        gm.runMatches(1, 0, "TestPlayer", "TestPlayer");
 
 		// add Defenders here
 		/*ArrayList<Defender> defenders = new ArrayList<Defender>();
@@ -284,50 +287,11 @@ public class GameMaster {
 		// initialize point matrix
 		int[][] points = new int[numDefenders][numAttackers];
 
-		// execute attackers
-		for (int d = 0; d < numDefenders; d++) {
-			String defenderName = defenderNames[d];
-			for (int a = 0; a < numAttackers; a++) {
-				String attackerName = attackerNames[a];
-				for (int g = 0; g < numGames; g++) {
-					String graphName = g + "";
-					AttackerMonitor am = new AttackerMonitor(attackerName,
-							defenderName, graphName);
-					while (am.getBudget() > 0) {
-						Attacker attacker = getAttacker(defenderName,attackerName, graphName);
-						new Thread(attacker).start();
-
-						for(int sleep = 0; sleep < 500; sleep+=10){
-							if(attacker.keepRunning()){						
-								try {Thread.sleep(10);} catch (Exception e) {e.printStackTrace();}
-							}
-							else{break;}
-						}
-						attacker.kill();
-						am.readMove();
-						//System.out.println("Budget after move: "+ am.getBudget());
-					}
-					am.close();
-					points[d][a] += am.getPoints();
-				}
-			}
-		}
 		// perform analysis
 		Analyzer analyzer = new Analyzer(points, attackerNames, defenderNames);
 		analyzer.savePoints(p);*/
-		// Parser parser = new Parser();
 
-
-		/*Graph g = Parser.parseGraph("0.hidden");
-        for(int i = 0; i < g.getSize(); i++) {
-            System.out.println("node "+i);
-            ArrayList<Card> cards = g.getNode(i).getPossibleCards();
-            for(int c = 0; c < cards.size();c++)
-                System.out.println(cards.get(c).toString());
-        }
-        Graph copy = g.copy();
-        copy.saveGraph(true);*/
-		System.exit(0);
+		System.exit(0);//just to make sure it exits
 	}
 	/**
 	 * Generates graphs
@@ -359,55 +323,53 @@ public class GameMaster {
 		return null;
 	}
 
-	private static void changeParameters(int x)
-	{
+	private static void changeParameters(int x){
 		switch (x)
 		{
-		case 0://smallish graph
-			Parameters.NUMBER_OF_NODES = 10;
-			Parameters.NUMBER_OF_PUBLIC_NODES = 2;
-			Parameters.NUMBER_OF_ROUTER_NODES = 2;
-			Parameters.MAX_NEIGHBORS = 3;
-			Parameters.MIN_NEIGHBORS = 2;
-			break;
-		case 1: //decent size graph
-			Parameters.NUMBER_OF_NODES = 20;
-			Parameters.NUMBER_OF_PUBLIC_NODES = 2;
-			Parameters.NUMBER_OF_ROUTER_NODES = 4;
-			Parameters.MAX_NEIGHBORS = 5;
-			Parameters.MIN_NEIGHBORS = 1;
-			break;
-		case 2: //expensive for defender
-			Parameters.NUMBER_OF_NODES = 20;
-			Parameters.NUMBER_OF_PUBLIC_NODES = 2;
-			Parameters.NUMBER_OF_ROUTER_NODES = 4;
-			Parameters.MAX_NEIGHBORS = 5;
-			Parameters.MIN_NEIGHBORS = 1;
-			break;
-		case 3://expensive to attack
-			Parameters.NUMBER_OF_NODES = 20;
-			Parameters.NUMBER_OF_PUBLIC_NODES = 2;
-			Parameters.NUMBER_OF_ROUTER_NODES = 4;
-			Parameters.MAX_NEIGHBORS = 5;
-			Parameters.MIN_NEIGHBORS = 1;
-			break;
-		case 4://expensive to probe
-			Parameters.NUMBER_OF_NODES = 20;
-			Parameters.NUMBER_OF_PUBLIC_NODES = 2;
-			Parameters.NUMBER_OF_ROUTER_NODES = 4;
-			Parameters.MAX_NEIGHBORS = 5;
-			Parameters.MIN_NEIGHBORS = 1;
-			break;
-		case 5://expensive for everyone
-			Parameters.NUMBER_OF_NODES = 20;
-			Parameters.NUMBER_OF_PUBLIC_NODES = 2;
-			Parameters.NUMBER_OF_ROUTER_NODES = 4;
-			Parameters.MAX_NEIGHBORS = 5;
-			Parameters.MIN_NEIGHBORS = 1;
-			break;
-		default:
-			break;
-
+            case 0://smallish graph
+                Parameters.NUMBER_OF_NODES = 8;
+                Parameters.MAX_NEIGHBORS = 3;
+                Parameters.MIN_NEIGHBORS = 2;
+                Parameters.NUM_POSSIBLE_CARDS = 4;
+                Parameters.NUM_TURNS = 8;
+                break;
+            case 1://slightly larger
+                Parameters.NUMBER_OF_NODES = 12;
+                Parameters.MAX_NEIGHBORS = 3;
+                Parameters.MIN_NEIGHBORS = 1;
+                Parameters.NUM_POSSIBLE_CARDS = 4;
+                Parameters.NUM_TURNS = 12;
+                break;
+            case 2: //less uncertainty
+                Parameters.NUMBER_OF_NODES = 14;
+                Parameters.MAX_NEIGHBORS = 5;
+                Parameters.MIN_NEIGHBORS = 1;
+                Parameters.NUM_POSSIBLE_CARDS = 2;
+                Parameters.NUM_TURNS = 8;
+                break;
+            case 3://no uncertainty
+                Parameters.NUMBER_OF_NODES = 12;
+                Parameters.MAX_NEIGHBORS = 5;
+                Parameters.MIN_NEIGHBORS = 1;
+                Parameters.NUM_POSSIBLE_CARDS = 1;
+                Parameters.NUM_TURNS = 8;
+                break;
+            case 4://large and complex
+                Parameters.NUMBER_OF_NODES = 20;
+                Parameters.MAX_NEIGHBORS = 5;
+                Parameters.MIN_NEIGHBORS = 3;
+                Parameters.NUM_POSSIBLE_CARDS = 4;
+                Parameters.NUM_TURNS = 15;
+                break;
+            case 5://even more complexity
+                Parameters.NUMBER_OF_NODES = 20;
+                Parameters.MAX_NEIGHBORS = 5;
+                Parameters.MIN_NEIGHBORS = 3;
+                Parameters.NUM_POSSIBLE_CARDS = 5;
+                Parameters.NUM_TURNS = 15;
+                break;
+            default://whatever the default parameters are
+                break;
 		}
 	}
 }

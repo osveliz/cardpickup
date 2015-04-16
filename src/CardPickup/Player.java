@@ -40,7 +40,7 @@ public abstract class Player implements Runnable
     
     /**
      * Sets the opponent's current location
-     * @param newNode
+     * @param newNode location of opponent
      */
     public void setOpponentNode(int newNode){
         oppNode = newNode;
@@ -48,7 +48,7 @@ public abstract class Player implements Runnable
     
     /**
      * returns your current location
-     * @return
+     * @return current location
      */
     public int getCurrentNode(){
     	return currentNode;

@@ -6,10 +6,6 @@ package CardPickup;
 public class Parameters {
     /**Identifies the number of nodes in an initial graph*/
     public static int NUMBER_OF_NODES = 15;
-    /**Identifies the number of public nodes in an initial graph*/
-    public static int NUMBER_OF_PUBLIC_NODES = 3;
-    /**Identifies the number of routers in an initial graph*/
-    public static int NUMBER_OF_ROUTER_NODES = 1;
     /**Identifies the maximum number of neighbors in an initial graph for non-router nodes*/
     public static int MAX_NEIGHBORS = 4;
     /**Identifies the minimum number of neighbors in an initial graph for non-router nodes*/
@@ -19,5 +15,5 @@ public class Parameters {
     /**Identifies the number of turns (both players moving is a turn)*/
     public static int NUM_TURNS = 10;
     /**Identifies the maximum hand size for each player*/
-    public static int MAX_HAND = 5;
+    public static final int MAX_HAND = 5;
 }
