@@ -14,7 +14,15 @@ public class GameProfile {
 	private PlayerProfile p2; //second player
 	private int turns;
 	private String winner;
-	
+
+    /**
+     * Default constructor
+     * @param g graph
+     * @param gameSeed number representing the seed
+     * @param p1 player 1 profile
+     * @param p2 player 2 profile
+     * @param match number representing the match
+     */
 	public GameProfile(Graph g, int gameSeed, PlayerProfile p1, PlayerProfile p2,int match){
         ID = gameSeed*2 + match;
 		hEval = new HandEvaluator();
@@ -25,16 +33,25 @@ public class GameProfile {
 		turns = 0;
 		winner = null;
 	}
-	
+
+    /**
+     * Left in for future extensibility
+     */
 	public void oneRound(){
 		turns++;
 	}
-	
+
+    /**
+     * Returns winner
+     * @return winner
+     */
 	public String getWinner(){
 		return winner;
 	}
-	
-	//determines winner at the end of the game
+
+    /**
+     * Uses hand evaluation to determine a winner
+     */
 	public void endGame(){
 		float p1Score = hEval.rankHand(p1.getCurrentHand());
 		float p2Score = hEval.rankHand(p2.getCurrentHand());
@@ -45,8 +62,10 @@ public class GameProfile {
 		else
 			winner = "Draw";
 	}
-	
-	//Don't forget to include Parameters as well!
+
+    /**
+     * Left in for future extensibility
+     */
 	public void writeResults(){
 		
 	}
