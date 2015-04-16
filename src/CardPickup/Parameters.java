@@ -17,46 +17,7 @@ public class Parameters {
     /**Identifies the number of possible cards in the uncertain graph*/
     public static int NUM_POSSIBLE_CARDS = 4;
     /**Identifies the number of turns (both players moving is a turn)*/
-    public static int NUM_TURNS = 7;
-
-    /**The maximum PointValue*/
-    public static int MAX_POINT_VALUE = 20;
-    /**The maximum number of router edges*/
-    public static int MAX_ROUTER_EDGES = 7;
-
-    /**The value that the defender gets for each node in a graph*/
-    public static int DEFENDER_RATE = 10;
-    /**Defender's Budget*/
-    public static int DEFENDER_BUDGET = DEFENDER_RATE * NUMBER_OF_NODES;
-    /**The cost to strengthen a node*/
-    public static int STRENGTHEN_RATE = 2;
-    /**The cost for having invalid actions*/
-    public static int INVALID_RATE = 10;
-    /**The cost to remove an edge (add a firewall)*/
-    public static int FIREWALL_RATE = 10;
-    /**The cost to add a honeypot*/
-    public static int HONEYPOT_RATE = 50;
-
-    /**The value that the attacker gets for each node in a graph*/
-    public static int ATTACKER_RATE = 10;
-    /**The maximum value for an attacker roll*/
-    public static int ATTACK_ROLL = 20;
-    /**The cost for performing an attack*/
-    public static int ATTACK_RATE = 8;
-    /**The maximum value for a super attack*/
-    public static int SUPERATTACK_ROLL = 50;
-    /**The cost for performing a super attack*/
-    public static int SUPERATTACK_RATE = 20;
-    /**The cost to probe for the security value*/
-    public static int PROBE_SECURITY_RATE = 2;
-    /**The cost to probe for the point value*/
-    public static int PROBE_POINT_RATE = 2;
-    /**The cost to probe for the number of connections*/
-    public static int PROBE_CONNECTIONS_RATE = 1;
-    /**The cost to identify if a node is a honey pot*/
-    public static int PROBE_HONEY_RATE = 1;
-    /**Penalty for successfully capturing a honey pot*/
-    public static int HONEY_PENALTY = -10;
-    /**Attacker's Budget*/
-    public static int ATTACKER_BUDGET = ATTACK_RATE * NUMBER_OF_NODES;
+    public static int NUM_TURNS = 10;
+    /**Identifies the maximum hand size for each player*/
+    public static int MAX_HAND = 5;
 }

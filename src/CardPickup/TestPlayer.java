@@ -1,0 +1,66 @@
+package CardPickup;
+
+import java.util.Random;
+
+/**
+ * Some important variables inherited from the Player Class:
+ * protected Node[] graph; //Contains the entire graph
+ * protected Hand hand; //Contains your current hand (Use the cardsHole array list)
+ * protected int turnsRemaining; //Number of turns before the game ends
+ * protected int currentNode; //Your current location
+ * protected int oppNode; //Opponent's current position
+ * protected Card oppLastCard;	//Opponent's last picked up card
+ * 
+ * Important methods inherited from Player Class:
+ * Method that is used to determine if a move is valid. This method should be used to help players
+ * determine if their actions are valid. GameMaster has a local copy of this method and all the
+ * required variables (such as the true graph), so manipulating the variables to turn a previously
+ * invalid action in to a "valid" one will not help you as the GameMaster will still see the action 
+ * as invalid.
+ * protected boolean isValidAction(Action a); //This method can be used to determine if an action is valid
+ * 
+ * @author Marcus Gutierrez
+ * @version 04/15/2015
+ */
+public class TestPlayer extends Player{
+	private String playerName = "TestPlayer"; //Overwrite this variable in your player subclass
+	
+	/**Do not alter this constructor as nothing has been initialized yet. Please use initialize() instead*/
+	public TestPlayer() {
+		super();
+	}
+	
+	public void initialize() {
+		//WRITE ANY INITIALIZATION COMPUTATIONS HERE
+	}
+	
+	/**Overridden method to return Student's agent's player name*/
+	public String getName(){
+		return playerName;
+	}
+	
+	/**
+     * THIS METHOD SHOULD BE OVERRIDDEN if you wish to make computations off of the opponent's moves. 
+     * GameMaster will call this to update your player on the opponent's actions. This method is called
+     * after the opponent has made a move.
+     * 
+     * @param opponentNode Opponent's current location
+     * @param opponentPickedup Notifies if the opponent picked up a card last turn
+     * @param c The card that the opponent picked up, if any (null if the opponent did not pick up a card)
+     */
+    protected void opponentAction(int opponentNode, boolean opponentPickedup, Card c){
+    	oppNode = opponentNode;
+    	if(opponentPickedup)
+    		oppLastCard = c;
+    	else
+    		oppLastCard = null;
+    }
+
+	@Override
+	public Action makeAction() {
+		Random r = new Random();
+		int neighbor = graph[currentNode].getNeighbor(r.nextInt(graph[currentNode].getNeighborAmount())).getNodeID();
+		return new Action(ActionType.PICKUP, neighbor);
+	}
+
+}

@@ -5,14 +5,18 @@ package CardPickup;
  * 
  * @author Marcus Gutierrez
  */
-public class AttackerAction {
+public class Action {
 
-	public AttackerActionType move;
+	public ActionType move;
 	public int nodeID;
 	
-	public AttackerAction(AttackerActionType move, int nodeID){
+	public Action(ActionType move, int nodeID){
 		this.move = move;
 		this.nodeID = nodeID;
+	}
+	
+	public String toString(){
+		return move.toString()+ " " + nodeID;
 	}
 	
 }
