@@ -172,4 +172,12 @@ public class Hand {
 		s+=temp[i].shortName()+" ";
 	  return s;
   }
+
+    /**
+     * Get the total size of all three inner hands
+     * @return size of the hand
+     */
+    public int size(){
+        return cardsHole.size()+cardsShared.size()+cardsUp.size();
+    }
 }

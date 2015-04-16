@@ -175,12 +175,13 @@ public class GameMaster {
 	 * @param p1Name The player that will act first in the first round of a match (will act as player 2 in the second round)
 	 * @param p2Name The player that will act second in the first round of a match (will act as player 1 in the first round)
 	 */
-	public static void runMatches(int gameSeed, String p1Name, String p2Name){
+	public static Hand[] runMatches(int gameSeed, String p1Name, String p2Name){
         int matchAmt = 1;//Number of matches to play. Leave as 1. Left in for future proofing.
+        Hand[] hands = new Hand[4];//4 hands p1 & p2 vs p2 and p1
 		if(getPlayer(p1Name) == null || getPlayer(p2Name) == null){//make sure players are valid
 			System.out.println("ERROR: CHECK THAT PLAYER NAMES ARE VALID");
 			System.out.println("Ensure that you altered GameMaster.getPlayer() properly to add your agent and that the names match");
-			return;
+			return null;
 		}
         if(verbose)System.out.println("Game " + Integer.toString(gameSeed) + " starting...");
 		for(int i = 0; i < matchAmt; i++){
@@ -195,7 +196,8 @@ public class GameMaster {
 			GameProfile gp = new GameProfile(g, gameSeed, p1Profile, p2Profile,i); //Establish a game profile to store all information
 			
 			oneRound(gp, p1Profile, p1, p2Profile, p2,gameSeed);
-			
+			hands[0] = p1Profile.getCurrentHand();
+            hands[1] = p2Profile.getCurrentHand();
 			/////////////////////////////////////////////////////////////////////////////
 			//Exact same code as above, but reverses the roles of player 1 and player 2//
 			/////////////////////////////////////////////////////////////////////////////
@@ -210,7 +212,11 @@ public class GameMaster {
 			gp = new GameProfile(g, gameSeed, p1Profile, p2Profile, i+1); //Establish a game profile to store all information
 			
 			oneRound(gp, p1Profile, p1, p2Profile, p2,gameSeed);
+            hands[2] = p2Profile.getCurrentHand();
+            hands[3] = p1Profile.getCurrentHand();
+            return hands;
 		}
+        return null;
 	}
 
 	/**
@@ -220,7 +226,7 @@ public class GameMaster {
 	 */
 	public static void main(String[] args) {
 		int numGames = 5;
-		int parameterSetting = 1;
+		int parameterSetting = 2;
 		changeParameters(parameterSetting);
 		generateGraphs(numGames);
 
@@ -229,16 +235,59 @@ public class GameMaster {
         players.add(new TestPlayer());
         players.add(new TestPlayer());//adding this player twice to play against itself
 
+        float[] ranks = new float[players.size()];
+        double[] wins = new double[players.size()];
         int numPlayers = players.size();
         for(int p1 = 0; p1 < numPlayers; p1++) {
             for(int p2 = p1+1; p2 < numPlayers; p2++) {
-                if(p1!=p2)
-                    for (int game = 0; game < numGames; game++)
-                        runMatches(game, players.get(p1).getName(), players.get(p2).getName());
+                if(p1!=p2) {
+                    for (int game = 0; game < numGames; game++) {
+                        Hand[] hands = runMatches(game, players.get(p1).getName(), players.get(p2).getName());
+                        evaluateHands(hands[0],hands[1],ranks,wins,p1,p2);
+                        evaluateHands(hands[2],hands[3],ranks,wins,p1,p2);
+                    }
+                }
             }
         }
+
+        for(int i = 0; i < wins.length; i++)
+            System.out.println(players.get(i).getName()+" "+wins[i]);
 		System.exit(0);//just to make sure it exits
 	}
+
+    private static void evaluateHands(Hand hand1, Hand hand2, float[]ranks, double[]wins,int p1, int p2){
+        HandEvaluator hEval = new HandEvaluator();
+        //neither player makes it to 5
+        if (hand1.size() != Parameters.MAX_HAND && hand2.size() != Parameters.MAX_HAND)
+            return;//neither player made it to 5 cards
+        else if (hand1.size() != Parameters.MAX_HAND) {//p2 made it to 5 but p1 didn't
+            wins[p2]++;
+            ranks[p2] += hEval.rankHand(hand2);
+        } else if (hand2.size() != Parameters.MAX_HAND) {//p1 made it to 5 but p2 didn't
+            wins[p1]++;
+            ranks[p1] += hEval.rankHand(hand2);
+        } else {
+            float rank1 = hEval.rankHand(hand1);
+            float rank2 = hEval.rankHand(hand2);
+            if (rank1 > rank2)//p1 wins
+            {//p1 wins
+                wins[p1]++;
+                if (verbose)
+                    System.out.println("p1 wins with " + hEval.nameHand(rank1) + " against p2 " + hEval.nameHand(rank2));
+            } else if (rank1 < rank2) {//p2 wins
+                wins[p2]++;
+                if (verbose)
+                    System.out.println("p1 lost with " + hEval.nameHand(rank1) + " against p2 " + hEval.nameHand(rank2));
+            } else {//draw
+                wins[p1] += .5;
+                wins[p2] += .5;
+                if (verbose)
+                    System.out.println("p1 drew with " + hEval.nameHand(rank1) + " against p2 " + hEval.nameHand(rank2));
+            }
+            ranks[p1] += rank1;
+            ranks[p2] += rank2;
+        }
+    }
 	/**
 	 * Generates graphs
 	 * 
