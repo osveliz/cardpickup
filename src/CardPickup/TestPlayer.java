@@ -23,20 +23,16 @@ import java.util.Random;
  * @version 04/15/2015
  */
 public class TestPlayer extends Player{
-	private String playerName = "TestPlayer"; //Overwrite this variable in your player subclass
-	
+	protected final String newName = "TestPlayer"; //Overwrite this variable in your player subclass
+
 	/**Do not alter this constructor as nothing has been initialized yet. Please use initialize() instead*/
 	public TestPlayer() {
 		super();
+        playerName = newName;
 	}
 	
 	public void initialize() {
 		//WRITE ANY INITIALIZATION COMPUTATIONS HERE
-	}
-	
-	/**Overridden method to return Student's agent's player name*/
-	public String getName(){
-		return playerName;
 	}
 	
 	/**
@@ -45,12 +41,12 @@ public class TestPlayer extends Player{
      * after the opponent has made a move.
      * 
      * @param opponentNode Opponent's current location
-     * @param opponentPickedup Notifies if the opponent picked up a card last turn
+     * @param opponentPickedUp Notifies if the opponent picked up a card last turn
      * @param c The card that the opponent picked up, if any (null if the opponent did not pick up a card)
      */
-    protected void opponentAction(int opponentNode, boolean opponentPickedup, Card c){
+    protected void opponentAction(int opponentNode, boolean opponentPickedUp, Card c){
     	oppNode = opponentNode;
-    	if(opponentPickedup)
+    	if(opponentPickedUp)
     		oppLastCard = c;
     	else
     		oppLastCard = null;

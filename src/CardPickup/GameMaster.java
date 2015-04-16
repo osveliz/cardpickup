@@ -1,5 +1,7 @@
 package CardPickup;
 
+import java.util.ArrayList;
+
 /**
  * Pits Attacker and Defender agents against one another in the name of Science!
  * 
@@ -15,7 +17,7 @@ package CardPickup;
 public class GameMaster {
 	
 	private static int gameID = 0;
-	private boolean verbose = true; //Set to false if you do not want much detail printed to console
+	private static boolean verbose = true; //Set to false if you do not want much detail printed to console
 
 	/**
 	 * Initializes each player and each player profile with all the relevant knowledge needed to start a game
@@ -25,7 +27,7 @@ public class GameMaster {
      * @param p2Profile profile for player 2
      * @param p2 player 2
 	 */
-	public void initializePlayers(Graph g, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2){
+	public static void initializePlayers(Graph g, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2){
 		//Player 1
 		p1.setGraph(g.generateHiddenGraph());
 		p1Profile.setCurrentHand(g.getHand(0));
@@ -52,7 +54,7 @@ public class GameMaster {
 	 * Has one player execute a move
 	 * @param p player who will execute a single move
 	 */
-	private void oneTurn(Player p){
+	private static void oneTurn(Player p){
 		Thread playerThread = new Thread(p);
 		playerThread.start();
 		for(int sleep = 0; sleep < 500; sleep+=10){
@@ -70,7 +72,7 @@ public class GameMaster {
      * @param currentPlayer current player
      * @param opponent opposing player
 	 */
-	private void registerTurn(Node[] graph, PlayerProfile cpProfile, Player currentPlayer, Player opponent){
+	private static void registerTurn(Node[] graph, PlayerProfile cpProfile, Player currentPlayer, Player opponent){
 		Action a = currentPlayer.getLastAction();
 		if(isValidMove(graph, cpProfile.getCurrentLocation(), a.nodeID)){
 			switch(a.move){
@@ -114,7 +116,7 @@ public class GameMaster {
 	 * @param playerDestination The attempted destination of the player
 	 * @return Rather the move is valid or not
 	 */
-	private boolean isValidMove(Node[] graph, int playerLocation, int playerDestination){
+	private static boolean isValidMove(Node[] graph, int playerLocation, int playerDestination){
 		if(playerLocation == playerDestination)
 			return true;
 		for(int i = 0; i < graph[i].getNeighborAmount(); i++){
@@ -131,7 +133,7 @@ public class GameMaster {
 	 * @param p1 The player that will move first
 	 * @param p2 The player that will move second
 	 */
-	private void oneRound(GameProfile gp, Graph g, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2){
+	private static void oneRound(GameProfile gp, Graph g, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2){
 		Node[] graph = g.generateCopyGraph();
 		initializePlayers(g, p1Profile, p1, p2Profile, p2);
 		boolean p1Finished;
@@ -170,13 +172,14 @@ public class GameMaster {
 	/**
 	 * Runs a specified number of matches on the same graph against two players. One match is
 	 * considered 2 rounds where the second round reverses the locations and hands of the 2 players.
-	 * @param matchAmt Number of matches to play
+
 	 * @param gameSeed number representing the seed used to generate the graph
 	 * @param p1Name The player that will act first in the first round of a match (will act as player 2 in the second round)
 	 * @param p2Name The player that will act second in the first round of a match (will act as player 1 in the first round)
 	 */
-	public void runMatches(int matchAmt, int gameSeed, String p1Name, String p2Name){
-		if(getPlayer(p1Name) == null || getPlayer(p2Name) == null){
+	public static void runMatches(int gameSeed, String p1Name, String p2Name){
+        int matchAmt = 1;//Number of matches to play. Leave as 1. Left in for future proofing.
+		if(getPlayer(p1Name) == null || getPlayer(p2Name) == null){//make sure players are valid
 			System.out.println("ERROR: CHECK THAT PLAYER NAMES ARE VALID");
 			System.out.println("Ensure that you altered GameMaster.getPlayer() properly to add your agent and that the names match");
 			return;
@@ -226,9 +229,19 @@ public class GameMaster {
 		changeParameters(parameterSetting);
 		generateGraphs(numGames);
 
-		GameMaster gm = new GameMaster();
-        gm.runMatches(1, 0, "TestPlayer", "TestPlayer");
+        //add your agent here
+        ArrayList<Player> players = new ArrayList<Player>();
+        players.add(new TestPlayer());
+        players.add(new TestPlayer());//adding this player twice to play against itself
 
+        int numPlayers = players.size();
+        for(int p1 = 0; p1 < numPlayers; p1++) {
+            for(int p2 = p1+1; p2 < numPlayers; p2++) {
+                if(p1!=p2)
+                    for (int game = 0; game < numGames; game++)
+                        runMatches(game, players.get(p1).getName(), players.get(p2).getName());
+            }
+        }
 		// add Defenders here
 		/*ArrayList<Defender> defenders = new ArrayList<Defender>();
 		defenders.add(new WhatDoesThisButtonDoDefender("0"));

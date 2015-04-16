@@ -1,13 +1,13 @@
 package CardPickup;
 
 /**
- * Player agent. The actions
+ * Player agent.
  * @author Marcus Gutierrez
  * @version 04/15/2015
  */
 public abstract class Player implements Runnable
 {
-    private String playerName = "defaultPlayer"; //Overwrite this variable in your player subclass
+    protected String playerName = "defaultPlayer"; //Overwrite this variable in your player subclass
     private Action lastAction;
     
     protected Node[] graph;
@@ -23,10 +23,6 @@ public abstract class Player implements Runnable
     public Player()
     {
         turnsRemaining = Parameters.NUM_TURNS;
-    }
-
-    public Player(String name){
-    	playerName = name;
     }
 
     /**
@@ -57,7 +53,7 @@ public abstract class Player implements Runnable
     /**
      * Sets your current Hand. This does not change your actual hand, just your copy of it.
      * The GameMaster keeps track of your actual hand.
-     * @param h
+     * @param h hand
      */
     public void setHand(Hand h){
     	hand = h;
@@ -65,7 +61,7 @@ public abstract class Player implements Runnable
     
     /**
      * Imports a new graph
-     * @param g
+     * @param g graph
      */
     public void setGraph(Node[] g){
     	graph = g;
@@ -145,9 +141,9 @@ public abstract class Player implements Runnable
 
     /**
      * Get Agent Name used by GameMaster.
-     * @return Name of defender
+     * @return Name of player
      */
-    public abstract String getName();
+    public String getName(){return playerName;}
 
     /**
      * Player logic goes here in extended super
@@ -162,11 +158,19 @@ public abstract class Player implements Runnable
     	return lastAction;
     }
 
-    private final void move(int targetID){
+    /**
+     * Sets the current node to the target node
+     * @param targetID node id of the target node
+     */
+    private void move(int targetID){
         currentNode = targetID;
     }
 
-    private final void pickup(int targetID){
+    /**
+     * Sets the current Node to the target node
+     * @param targetID node id of the target node
+     */
+    private void pickup(int targetID){
         currentNode = targetID;
     }
 
