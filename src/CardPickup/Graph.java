@@ -212,7 +212,6 @@ public class Graph {
 			}
 			for (int i = 0; i < nodes.length; i++) {
 				Node node = getNode(i);
-				//writer.println(node.getPv()+","+node.getSv()+","+node.getHoneyPot());
 				if(usePossibleCardSet){
 					ArrayList<Card> cards = node.getPossibleCards();
 					writer.print(cards.get(0));
@@ -244,21 +243,17 @@ public class Graph {
 	{
 		ArrayList<Integer> assigned = new ArrayList<Integer>();
 		Random rand = new Random();
-		for(int i = 0; i< this.nodes.length; i++)
-		{
+        for (Node node : this.nodes) {
+            while (true) {
+                int id = rand.nextInt(nodes.length);
+                if ((assigned.size() == 0) || (!assigned.contains(id))) {
+                    node.setNodeID(id);
+                    assigned.add(id);
+                    break;
+                }
 
-			while(true)
-			{
-				int id = rand.nextInt(nodes.length);
-				if((assigned.size()==0) || (!assigned.contains(id)))
-				{
-					this.nodes[i].setNodeID(id);
-					assigned.add(id);
-					break;
-				}
-
-			}
-		}
+            }
+        }
 	}
 
 	/**
@@ -274,15 +269,14 @@ public class Graph {
 		ArrayList<Integer> completedNodes = new ArrayList<Integer>();
 		ArrayList<Integer> tmpNodeStack = new ArrayList<Integer>();
 		int currentIndex = 0;
-		for (int i = 0; i < nodes.length; i++)
-		{
+		for (int i = 0; i < nodes.length; i++) {
 			int localMax = r.nextInt(Parameters.MAX_NEIGHBORS - Parameters.MIN_NEIGHBORS) + Parameters.MIN_NEIGHBORS;
 			int neighborCounter = 0;
 			ArrayList<Integer> tmpNeighbors = new ArrayList<Integer>();
 			ArrayList<Integer> rejectedNeighbors = new ArrayList<Integer>();
 			while(true)
 			{
-				int nodeIndex= r.nextInt(nodes.length);
+				int nodeIndex = r.nextInt(nodes.length);
 				int totalNeighbors = 0;
 				for(int k=0; k<nodes.length; k++)
 					if(adjacencyMatrix[currentIndex][k]==1)
@@ -292,26 +286,18 @@ public class Graph {
 				if(rejectedNeighbors.size()>0)
 					if(rejectedNeighbors.size()==(nodes.length-tmpNeighbors.size()-1))
 						break;
-
 				if (isAllowedToBeNeighbor(currentIndex, nodeIndex, adjacencyMatrix))
 				{
 					if((tmpNeighbors.size()>0 && !tmpNeighbors.contains(nodeIndex) && tmpNeighbors.size() < Parameters.MAX_NEIGHBORS) || tmpNeighbors.size()==0)
 					{
-						//System.out.println("Current Index  " + currentIndex + "neighbor counter "+ neighborCounter + " Num Neighbors " + localMax);
-						//System.out.println("Got Neighbor " + nodeIndex);
 						adjacencyMatrix[currentIndex][nodeIndex] = 1;
 						adjacencyMatrix[nodeIndex][currentIndex] = 1;
 						tmpNeighbors.add(nodeIndex);
-						if (!tmpNodeStack.contains(nodeIndex)){
+						if (!tmpNodeStack.contains(nodeIndex))
 							tmpNodeStack.add(nodeIndex);
-							//System.out.println("Adding to stack: " + nodeIndex);
-						}
 						neighborCounter++;
 						if(neighborCounter==localMax)
-						{	
-							//System.out.println("Neighbour Count for " + currentIndex + " : " +neighborCounter);
 							break;
-						}
 					}
 					else
 						if(rejectedNeighbors.size()>=0 && !rejectedNeighbors.contains(nodeIndex))
@@ -328,7 +314,6 @@ public class Graph {
 					break;
 				// pick a node from the stack
 				currentIndex = tmpNodeStack.get(0);
-				//System.out.println("Current index: " + currentIndex);
 				tmpNodeStack.remove(0);
 				if (!completedNodes.contains(currentIndex))
 					break;
@@ -349,6 +334,7 @@ public class Graph {
 				}
 			}
 		}
+        //code oscar added
 		//create deck of cards
 		ArrayList<Card> deck = new ArrayList<Card>();
 		for(int rank = 1; rank<=13; rank++)
@@ -371,47 +357,42 @@ public class Graph {
 		hand[0].addHoleCard(new Card(p1c2.toString()));
 		hand[1].addHoleCard(new Card(p2c1.toString()));
 		hand[1].addHoleCard(new Card(p2c2.toString()));
-		printHand(1,p1c1,p1c2);
+		printHand(1,p1c1,p1c2);//saves hand to files
 		printHand(2,p2c1,p2c2);
 
 		//deal as many cards as possible to network
-		for(int i = 0; i < nodes.length; i++){
-			nodes[i].setCard(deck.remove(0));
-			for(int p = 1; p < Parameters.NUM_POSSIBLE_CARDS; p++)
-				nodes[i].addPossible(new Card(r.nextInt(13)+1,r.nextInt(4)+1));
-			nodes[i].shufflePossibleCards();
-		}
+        for (Node node : nodes) {
+            node.setCard(deck.remove(0));
+            for (int p = 1; p < Parameters.NUM_POSSIBLE_CARDS; p++)
+                node.addPossible(new Card(r.nextInt(13) + 1, r.nextInt(4) + 1));
+            node.shufflePossibleCards();
+        }
 
-		//I think this code was a failsafe to make sure that nodes were connected.
+		//I think this code was a fail safe to make sure that nodes were connected.
 		for(int i=0; i<nodes.length; i++)
 		{
 			if(nodes[i].neighbor.size()==0)
 			{
 				//add some random neighbor
-				int neighborcounter = 0;
-				//System.out.println("Node "+ i +" has no neighbor");
-				Random rand = new Random(name);
+				int neighborCounter = 0;
 				while(true)
 				{
-					int nodeid = rand.nextInt(nodes.length-1);
-					if(i!=nodeid)
+					int nodeID = r.nextInt(nodes.length-1);
+					if(i!=nodeID)
 					{
-
-						if(neighborcounter==2)
-						{
+						if(neighborCounter==2)//also not sure why this needs to be 2. Need to ask Porag about this.
 							break;
-						}
 						if(nodes[i].neighbor.size()==0)
 						{
-							nodes[i].neighbor.add(nodes[nodeid]);
-							nodes[nodeid].neighbor.add(nodes[i]);
-							neighborcounter++;
+							nodes[i].neighbor.add(nodes[nodeID]);
+							nodes[nodeID].neighbor.add(nodes[i]);
+							neighborCounter++;
 						}
-						else if((nodes[i].neighbor.size()>0) && !(nodes[i].neighbor.contains(nodes[nodeid])))
+						else if((nodes[i].neighbor.size()>0) && !(nodes[i].neighbor.contains(nodes[nodeID])))
 						{
-							nodes[i].neighbor.add(nodes[nodeid]);
-							nodes[nodeid].neighbor.add(nodes[i]);
-							neighborcounter++;
+							nodes[i].neighbor.add(nodes[nodeID]);
+							nodes[nodeID].neighbor.add(nodes[i]);
+							neighborCounter++;
 						}
 
 					}
@@ -427,7 +408,7 @@ public class Graph {
 	 * @return a copy of the graph with the true card and possible cards on each node
 	 */
 	public Node[] generateCopyGraph(){
-		if(graphGenerated){
+		//if(graphGenerated){
 			Node[] graph = new Node[nodes.length];
 			for(int i = 0; i < nodes.length; i++){
 				graph[i] = nodes[i].clone();
@@ -439,8 +420,8 @@ public class Graph {
 				}
 			}
 			return graph;
-		}
-		return null;
+		//}
+		//return null;
 	}
 
 	/**
@@ -448,7 +429,7 @@ public class Graph {
 	 * @return a copy of the graph without the true card on each node
 	 */
 	public Node[] generateHiddenGraph(){
-		if(graphGenerated){
+		//if(graphGenerated){
 			Node[] playerGraph = new Node[nodes.length];
 			for(int i = 0; i < nodes.length; i++)
 				playerGraph[i] = nodes[i].getHiddenNode();
@@ -459,7 +440,11 @@ public class Graph {
 				}
 			}
 			return playerGraph;
-		}
-		return null;
+		//}
+		//return null;
 	}
+
+    public Node[] getNodes(){
+        return nodes;
+    }
 }

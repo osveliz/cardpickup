@@ -180,7 +180,7 @@ public class Node
     }
 
     public void addPossible(Card c) {
-        if(possibleCards.size() > 0)
+        if(possibleCards == null)
             possibleCards = new ArrayList<Card>();
         possibleCards.add(new Card(c.toString()));
     }

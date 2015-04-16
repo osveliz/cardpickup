@@ -1,8 +1,7 @@
 package CardPickup;
 
 /**
- * Maybe use this class to write everything needed to store information about the game?
- * Stores all information about a single game.
+ * Auxiliary class for storing information about the game?
  * @author Marcus Gutierrez
  */
 public class GameProfile {
@@ -16,8 +15,8 @@ public class GameProfile {
 	private int turns;
 	private String winner;
 	
-	public GameProfile(Graph g, int gameSeed, PlayerProfile p1, PlayerProfile p2, int ID){
-		this.ID = ID;
+	public GameProfile(Graph g, int gameSeed, PlayerProfile p1, PlayerProfile p2,int match){
+        ID = gameSeed*2 + match;
 		hEval = new HandEvaluator();
 		this.gameSeed = gameSeed;
 		this.g = g;
@@ -44,7 +43,7 @@ public class GameProfile {
 		else if (p2Score > p1Score)
 			winner = p2.getName();
 		else
-			winner = "No Player";
+			winner = "Draw";
 	}
 	
 	//Don't forget to include Parameters as well!

@@ -16,7 +16,7 @@ import java.util.ArrayList;
  */
 public class GameMaster {
 	
-	private static int gameID = 0;
+	//private static int gameID = 0;
 	private static boolean verbose = true; //Set to false if you do not want much detail printed to console
 
 	/**
@@ -26,22 +26,30 @@ public class GameMaster {
      * @param p1 player 1
      * @param p2Profile profile for player 2
      * @param p2 player 2
+     * @param gameSeed seed for the game
 	 */
-	public static void initializePlayers(Graph g, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2){
+	public static void initializePlayers(Graph g, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2, int gameSeed){
 		//Player 1
-		p1.setGraph(g.generateHiddenGraph());
-		p1Profile.setCurrentHand(g.getHand(0));
+        //Hand p1Hand = Parser.parseHand(gameSeed,1);
+		//p1.setGraph(g.generateHiddenGraph());
+        p1.setGraph(Parser.parseGraph(gameSeed+".hidden").generateHiddenGraph());
+		//p1Profile.setCurrentHand(g.getHand(0));
+        p1Profile.setCurrentHand(Parser.parseHand(gameSeed,1));//player 1
 		p1Profile.setCurrentLocation(0);
 		//Update the player 1
-		p1.setHand(g.getHand(0));
+		//p1.setHand(g.getHand(0));
+        p1.setHand(Parser.parseHand(gameSeed,1));
 		p1.setCurrentNode(p1Profile.getCurrentLocation());
 		
 		//Player 2
+        //Hand p2Hand = Parser.parseHand(gameSeed, 2);
 		p2.setGraph(g.generateHiddenGraph());
-		p2Profile.setCurrentHand(g.getHand(1));
+		//p2Profile.setCurrentHand(g.getHand(1));
+        p2Profile.setCurrentHand(Parser.parseHand(gameSeed, 2));
 		p2Profile.setCurrentLocation(1);
 		//Update the player 2
-		p2.setHand(g.getHand(1));
+		//p2.setHand(g.getHand(1));
+        p2.setHand(Parser.parseHand(gameSeed, 2));
 		p2.setCurrentNode(p2Profile.getCurrentLocation());
 		
 		//Notify players of their opponent
@@ -132,14 +140,16 @@ public class GameMaster {
 	 * @param g The graph the players will be playing on. Should already be initialized by this point.
 	 * @param p1 The player that will move first
 	 * @param p2 The player that will move second
+     * @param gameSeed game seed
 	 */
-	private static void oneRound(GameProfile gp, Graph g, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2){
-		Node[] graph = g.generateCopyGraph();
-		initializePlayers(g, p1Profile, p1, p2Profile, p2);
+	private static void oneRound(GameProfile gp, Graph g, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2, int gameSeed){
+		//Node[] graph = g.generateCopyGraph();
+        Node[] graph = Parser.parseGraph(gameSeed+".graph").getNodes();
+        g = Parser.parseGraph(gameSeed+".graph");
+		initializePlayers(g, p1Profile, p1, p2Profile, p2,gameSeed);
 		boolean p1Finished;
 		boolean p2Finished;
 		//Runs until both players have a full hand or are out of turns
-		if(verbose)System.out.println("Game " + Integer.toString(gameID-1) + " starting...");
 		for(int i = 0; i < Parameters.NUM_TURNS; i++){
 			//Checks if player 1 is finished, if not, has him/her make one move, then registers the turn the gamemaster and both players
 			if(p1Profile.getHandSize() < Parameters.MAX_HAND){
@@ -166,7 +176,7 @@ public class GameMaster {
 				break;
 		}
 		gp.endGame(); //Game has ended and the GameProfile calculates the winner
-		if(verbose)System.out.println("Game " + Integer.toString(gameID-1) + " ended with " + gp.getWinner() + " as the winner!");
+		if(verbose)System.out.println("Match ended with " + gp.getWinner() + " as the winner!");
 	}
 	
 	/**
@@ -184,21 +194,22 @@ public class GameMaster {
 			System.out.println("Ensure that you altered GameMaster.getPlayer() properly to add your agent and that the names match");
 			return;
 		}
-		
+        if(verbose)System.out.println("Game " + Integer.toString(gameSeed) + " starting...");
 		for(int i = 0; i < matchAmt; i++){
 			//Game initialization
 			Player p1 = getPlayer(p1Name);
 			Player p2 = getPlayer(p2Name);
-			Graph g = new Graph(gameSeed);
-			g.generateNetwork();
-			g.saveGraph();
+			//Graph g = new Graph(gameSeed);
+            Graph g = Parser.parseGraph(gameSeed+".graph");
+			//g.generateNetwork();
+			//g.saveGraph();
 			
 			//Profile initialization
 			PlayerProfile p1Profile = new PlayerProfile(p1.getName());
 			PlayerProfile p2Profile = new PlayerProfile(p2.getName());
-			GameProfile gp = new GameProfile(g, gameSeed, p1Profile, p2Profile, gameID++); //Establish a game profile to store all information
+			GameProfile gp = new GameProfile(g, gameSeed, p1Profile, p2Profile,i); //Establish a game profile to store all information
 			
-			oneRound(gp, g, p1Profile, p1, p2Profile, p2);
+			oneRound(gp, g, p1Profile, p1, p2Profile, p2,gameSeed);
 			
 			/////////////////////////////////////////////////////////////////////////////
 			//Exact same code as above, but reverses the roles of player 1 and player 2//
@@ -206,15 +217,16 @@ public class GameMaster {
 			//Game initialization
 			p1 = getPlayer(p2Name);
 			p2 = getPlayer(p1Name);
-			g = new Graph(gameSeed);
-			g.generateNetwork();
+			//g = new Graph(gameSeed);
+			//g.generateNetwork();
+            g = Parser.parseGraph(gameSeed+".graph");
 			
 			//Profile initialization
 			p1Profile = new PlayerProfile(p1.getName());
 			p2Profile = new PlayerProfile(p2.getName());
-			gp = new GameProfile(g, gameSeed, p1Profile, p2Profile, gameID++); //Establish a game profile to store all information
+			gp = new GameProfile(g, gameSeed, p1Profile, p2Profile, i+1); //Establish a game profile to store all information
 			
-			oneRound(gp, g, p1Profile, p1, p2Profile, p2);
+			oneRound(gp, g, p1Profile, p1, p2Profile, p2,gameSeed);
 		}
 	}
 
@@ -225,7 +237,7 @@ public class GameMaster {
 	 */
 	public static void main(String[] args) {
 		int numGames = 5;
-		int parameterSetting = 2;
+		int parameterSetting = 1;
 		changeParameters(parameterSetting);
 		generateGraphs(numGames);
 
@@ -242,68 +254,6 @@ public class GameMaster {
                         runMatches(game, players.get(p1).getName(), players.get(p2).getName());
             }
         }
-		// add Defenders here
-		/*ArrayList<Defender> defenders = new ArrayList<Defender>();
-		defenders.add(new WhatDoesThisButtonDoDefender("0"));
-		defenders.add(new Strengthener("0"));
-		defenders.add(new NumbDefender("0"));
-		defenders.add(new RationalDefender("0"));*/
-		/*defenders.add(new SteelCurtain("0"));
-		defenders.add(new CentroidWallDefenderV1("0"));
-		defenders.add(new Steelix("0"));
-		defenders.add(new Bowser("0"));
-		defenders.add(new MyDefender("0"));
-		defenders.add(new OmarEdgarDefender("0"));
-		defenders.add(new BrickWall("0"));
-		defenders.add(new SinglePath("0"));*/
-
-		// get names of defenders
-		/*String[] defenderNames = new String[defenders.size()];
-		for (int i = 0; i < defenders.size(); i++)
-			defenderNames[i] = defenders.get(i).getName();
-		int numDefenders = defenderNames.length;
-		// execute defenders
-		for (int d = 0; d < numDefenders; d++) {
-			for (int g = 0; g < numGames; g++) {
-				Defender defender = getDefender(defenderNames[d], g + "");
-				new Thread(defender).start();
-				for(int sleep = 0; sleep < 500; sleep+=10){
-					if(defender.keepRunning()){						
-						try {Thread.sleep(10);} catch (Exception e) {e.printStackTrace();}
-					}
-					else{break;}
-				}
-				defender.kill();
-				new DefenderHelper(defender.getName(), defender.getGraph());
-			}
-		}
-
-		// add Attackers here
-		ArrayList<Attacker> attackers = new ArrayList<Attacker>();
-		attackers.add(new Blitzkrieg());
-		attackers.add(new GamblingAttacker());
-		attackers.add(new CautiousAttacker());
-		attackers.add(new GreedyAttacker());*/
-		/*attackers.add(new GottaGoFast());
-		attackers.add(new MazeSolverAttackerV5());
-		attackers.add(new TinmAttack());
-		attackers.add(new SuperMario());
-		attackers.add(new EdgarOmarAttacker());
-		attackers.add(new OmarBradley());
-		attackers.add(new TheShyOne());*/
-
-		// get names of attackers
-		/*String[] attackerNames = new String[attackers.size()];
-		for (int i = 0; i < attackers.size(); i++)
-			attackerNames[i] = attackers.get(i).getName();
-		int numAttackers = attackerNames.length;
-		// initialize point matrix
-		int[][] points = new int[numDefenders][numAttackers];
-
-		// perform analysis
-		Analyzer analyzer = new Analyzer(points, attackerNames, defenderNames);
-		analyzer.savePoints(p);*/
-
 		System.exit(0);//just to make sure it exits
 	}
 	/**
@@ -340,8 +290,8 @@ public class GameMaster {
 		switch (x)
 		{
             case 0://smallish graph
-                Parameters.NUMBER_OF_NODES = 8;
-                Parameters.MAX_NEIGHBORS = 3;
+                Parameters.NUMBER_OF_NODES = 10;
+                Parameters.MAX_NEIGHBORS = 4;
                 Parameters.MIN_NEIGHBORS = 2;
                 Parameters.NUM_POSSIBLE_CARDS = 4;
                 Parameters.NUM_TURNS = 8;
@@ -349,21 +299,21 @@ public class GameMaster {
             case 1://slightly larger
                 Parameters.NUMBER_OF_NODES = 12;
                 Parameters.MAX_NEIGHBORS = 3;
-                Parameters.MIN_NEIGHBORS = 1;
+                Parameters.MIN_NEIGHBORS = 2;
                 Parameters.NUM_POSSIBLE_CARDS = 4;
                 Parameters.NUM_TURNS = 12;
                 break;
             case 2: //less uncertainty
                 Parameters.NUMBER_OF_NODES = 14;
                 Parameters.MAX_NEIGHBORS = 5;
-                Parameters.MIN_NEIGHBORS = 1;
+                Parameters.MIN_NEIGHBORS = 2;
                 Parameters.NUM_POSSIBLE_CARDS = 2;
                 Parameters.NUM_TURNS = 8;
                 break;
             case 3://no uncertainty
                 Parameters.NUMBER_OF_NODES = 12;
                 Parameters.MAX_NEIGHBORS = 5;
-                Parameters.MIN_NEIGHBORS = 1;
+                Parameters.MIN_NEIGHBORS = 2;
                 Parameters.NUM_POSSIBLE_CARDS = 1;
                 Parameters.NUM_TURNS = 8;
                 break;
