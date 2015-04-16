@@ -91,9 +91,10 @@ public class Node
 	/**
 	 * Returns neighborAmount
 	 */
-	public int getNeighborAmount(){
-		return neighborAmount;
-	}
+    public int getNeighborAmount(){
+        return neighbor.size();
+    }
+
 	
 	/**
 	 * sets this.neighborAmount attribute
