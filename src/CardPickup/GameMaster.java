@@ -240,24 +240,26 @@ public class GameMaster {
         int numPlayers = players.size();
         for(int p1 = 0; p1 < numPlayers; p1++) {
             for(int p2 = p1+1; p2 < numPlayers; p2++) {
-                if(p1!=p2) {
+                if(p1!=p2) {//avoid playing against yourself
                     for (int game = 0; game < numGames; game++) {
                         Hand[] hands = runMatches(game, players.get(p1).getName(), players.get(p2).getName());
-                        evaluateHands(hands[0],hands[1],ranks,wins,p1,p2);
-                        evaluateHands(hands[2],hands[3],ranks,wins,p1,p2);
+                        evaluateHands(hands[0],hands[1],ranks,wins,p1,p2,players);
+                        evaluateHands(hands[2],hands[3],ranks,wins,p1,p2,players);
                     }
                 }
             }
         }
-
+        System.out.println("\nTotal Wins");
         for(int i = 0; i < wins.length; i++)
             System.out.println(players.get(i).getName()+" "+wins[i]);
+        System.out.println("\nCumulative Card Ranks");
+        for(int i = 0; i < ranks.length; i++)
+            System.out.println(players.get(i).getName()+" "+ranks[i]);
 		System.exit(0);//just to make sure it exits
 	}
 
-    private static void evaluateHands(Hand hand1, Hand hand2, float[]ranks, double[]wins,int p1, int p2){
+    private static void evaluateHands(Hand hand1, Hand hand2, float[]ranks, double[]wins,int p1, int p2, ArrayList<Player> players){
         HandEvaluator hEval = new HandEvaluator();
-        //neither player makes it to 5
         if (hand1.size() != Parameters.MAX_HAND && hand2.size() != Parameters.MAX_HAND)
             return;//neither player made it to 5 cards
         else if (hand1.size() != Parameters.MAX_HAND) {//p2 made it to 5 but p1 didn't
@@ -266,23 +268,26 @@ public class GameMaster {
         } else if (hand2.size() != Parameters.MAX_HAND) {//p1 made it to 5 but p2 didn't
             wins[p1]++;
             ranks[p1] += hEval.rankHand(hand2);
-        } else {
+        } else {//both players finished
             float rank1 = hEval.rankHand(hand1);
             float rank2 = hEval.rankHand(hand2);
             if (rank1 > rank2)//p1 wins
             {//p1 wins
                 wins[p1]++;
                 if (verbose)
-                    System.out.println("p1 wins with " + hEval.nameHand(rank1) + " against p2 " + hEval.nameHand(rank2));
+                    System.out.println(players.get(p1).getName()+" wins with " + HandEvaluator.nameHand(rank1) +
+                            " against "+players.get(p2).getName()+" " + HandEvaluator.nameHand(rank2));
             } else if (rank1 < rank2) {//p2 wins
                 wins[p2]++;
                 if (verbose)
-                    System.out.println("p1 lost with " + hEval.nameHand(rank1) + " against p2 " + hEval.nameHand(rank2));
+                    System.out.println(players.get(p1).getName()+" lost with " + HandEvaluator.nameHand(rank1) +
+                            " against "+players.get(p2).getName()+" " + HandEvaluator.nameHand(rank2));
             } else {//draw
                 wins[p1] += .5;
                 wins[p2] += .5;
                 if (verbose)
-                    System.out.println("p1 drew with " + hEval.nameHand(rank1) + " against p2 " + hEval.nameHand(rank2));
+                    System.out.println(players.get(p1).getName()+" drew with " + HandEvaluator.nameHand(rank1) +
+                            " against "+players.get(p2).getName()+" " + HandEvaluator.nameHand(rank2));
             }
             ranks[p1] += rank1;
             ranks[p2] += rank2;
