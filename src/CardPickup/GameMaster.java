@@ -78,6 +78,7 @@ public class GameMaster {
 				cpProfile.setCurrentLocation(a.nodeID);
 				currentPlayer.setCurrentNode(a.nodeID);
 				opponent.opponentAction(a.nodeID, false, null);
+                currentPlayer.actionResult(a.nodeID,null);
 				if(verbose)System.out.println(currentPlayer.getName() + " moved to node " + a.nodeID);
 				break;
 			case PICKUP:
@@ -88,15 +89,18 @@ public class GameMaster {
 					currentPlayer.addCardToHand(new Card(graph[a.nodeID].getCard().toString()));
 					cpProfile.addCardToHand(new Card(graph[a.nodeID].getCard().toString()));
 					opponent.opponentAction(a.nodeID, true, new Card(graph[a.nodeID].getCard().toString()));
+                    currentPlayer.actionResult(a.nodeID, new Card(graph[a.nodeID].getCard().toString()));
 					graph[a.nodeID].clearPossibleCards(); //remove all possible cards
 					if(verbose)System.out.println(currentPlayer.getName() + " picked up a " + graph[a.nodeID].getCard().toString() + " at node " + a.nodeID);
 				}else{ //The node's card has already been picked up
 					opponent.opponentAction(a.nodeID, false, null);
+                    currentPlayer.actionResult(a.nodeID,null);
 					if(verbose)System.out.println(currentPlayer.getName() + " attempted to pick up a card at node " + a.nodeID + ", but nothing was there");
 				}
 				break;
 			default:
-				opponent.opponentAction(-1, false, null);
+				opponent.opponentAction(cpProfile.getCurrentLocation(), false, null);
+                currentPlayer.actionResult(cpProfile.getCurrentLocation(),null);
 				if(verbose)System.out.println(currentPlayer.getName() + " performed an invalid action");
 				break;
 			}
@@ -126,12 +130,14 @@ public class GameMaster {
 
 	/**
 	 * Should only be called by runMatches() as that method has the necessary initializations to run this method
-     * It expects generateNetwork() to have been called before running this method
+     * It expects generateGraph() to have been called before running this method
+     * @param p1Profile game master's profile of p1
 	 * @param p1 The player that will move first
+     * @param p2Profile game master's profile of p2
 	 * @param p2 The player that will move second
      * @param gameSeed game seed
 	 */
-	private static void oneRound(GameProfile gp, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2, int gameSeed){
+	private static void oneRound(PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2, int gameSeed){
         Node[] graph = Parser.parseGraph(gameSeed+".graph").getNodes();
         Graph g = Parser.parseGraph(gameSeed+".graph");
 		initializePlayers(g, p1Profile, p1, p2Profile, p2,gameSeed);
@@ -163,8 +169,6 @@ public class GameMaster {
 			if(p1Finished && p2Finished)
 				break;
 		}
-		gp.endGame(); //Game has ended and the GameProfile calculates the winner
-		if(verbose)System.out.println("Match ended with " + gp.getWinner() + " as the winner!");
 	}
 	
 	/**
@@ -176,7 +180,6 @@ public class GameMaster {
 	 * @param p2Name The player that will act second in the first round of a match (will act as player 1 in the first round)
 	 */
 	public static Hand[] runMatches(int gameSeed, String p1Name, String p2Name){
-        int matchAmt = 1;//Number of matches to play. Leave as 1. Left in for future proofing.
         Hand[] hands = new Hand[4];//4 hands p1 & p2 vs p2 and p1
 		if(getPlayer(p1Name) == null || getPlayer(p2Name) == null){//make sure players are valid
 			System.out.println("ERROR: CHECK THAT PLAYER NAMES ARE VALID");
@@ -184,39 +187,33 @@ public class GameMaster {
 			return null;
 		}
         if(verbose)System.out.println("Game " + Integer.toString(gameSeed) + " starting...");
-		for(int i = 0; i < matchAmt; i++){
-			//Game initialization
-			Player p1 = getPlayer(p1Name);
-			Player p2 = getPlayer(p2Name);
-            Graph g = Parser.parseGraph(gameSeed+".graph");
 
-			//Profile initialization
-			PlayerProfile p1Profile = new PlayerProfile(p1.getName());
-			PlayerProfile p2Profile = new PlayerProfile(p2.getName());
-			GameProfile gp = new GameProfile(g, gameSeed, p1Profile, p2Profile,i); //Establish a game profile to store all information
-			
-			oneRound(gp, p1Profile, p1, p2Profile, p2,gameSeed);
-			hands[0] = p1Profile.getCurrentHand();
-            hands[1] = p2Profile.getCurrentHand();
-			/////////////////////////////////////////////////////////////////////////////
-			//Exact same code as above, but reverses the roles of player 1 and player 2//
-			/////////////////////////////////////////////////////////////////////////////
-			//Game initialization
-			p1 = getPlayer(p2Name);
-			p2 = getPlayer(p1Name);
-            g = Parser.parseGraph(gameSeed+".graph");
-			
-			//Profile initialization
-			p1Profile = new PlayerProfile(p1.getName());
-			p2Profile = new PlayerProfile(p2.getName());
-			gp = new GameProfile(g, gameSeed, p1Profile, p2Profile, i+1); //Establish a game profile to store all information
-			
-			oneRound(gp, p1Profile, p1, p2Profile, p2,gameSeed);
-            hands[2] = p2Profile.getCurrentHand();
-            hands[3] = p1Profile.getCurrentHand();
-            return hands;
-		}
-        return null;
+        //Game initialization
+        Player p1 = getPlayer(p1Name);
+        Player p2 = getPlayer(p2Name);
+
+        //Profile initialization
+        PlayerProfile p1Profile = new PlayerProfile(p1.getName());
+        PlayerProfile p2Profile = new PlayerProfile(p2.getName());
+
+        oneRound(p1Profile, p1, p2Profile, p2,gameSeed);
+        hands[0] = p1Profile.getCurrentHand();
+        hands[1] = p2Profile.getCurrentHand();
+        /////////////////////////////////////////////////////////////////////////////
+        //Exact same code as above, but reverses the roles of player 1 and player 2//
+        /////////////////////////////////////////////////////////////////////////////
+        //Game initialization
+        p1 = getPlayer(p2Name);
+        p2 = getPlayer(p1Name);
+
+        //Profile initialization
+        p1Profile = new PlayerProfile(p1.getName());
+        p2Profile = new PlayerProfile(p2.getName());
+
+        oneRound(p1Profile, p1, p2Profile, p2,gameSeed);
+        hands[2] = p2Profile.getCurrentHand();
+        hands[3] = p1Profile.getCurrentHand();
+        return hands;
 	}
 
 	/**
@@ -233,7 +230,7 @@ public class GameMaster {
         //add your agent here
         ArrayList<Player> players = new ArrayList<Player>();
         players.add(new TestPlayer());
-        players.add(new TestPlayer());//adding this player twice to play against itself
+        players.add(new MaxPower());
 
         float[] ranks = new float[players.size()];
         double[] wins = new double[players.size()];
@@ -243,8 +240,10 @@ public class GameMaster {
                 if(p1!=p2) {//avoid playing against yourself
                     for (int game = 0; game < numGames; game++) {
                         Hand[] hands = runMatches(game, players.get(p1).getName(), players.get(p2).getName());
-                        evaluateHands(hands[0],hands[1],ranks,wins,p1,p2,players);
+                        if(verbose)System.out.println("Result for Game "+game);
+                        evaluateHands(hands[0], hands[1], ranks, wins, p1, p2, players);
                         evaluateHands(hands[2],hands[3],ranks,wins,p1,p2,players);
+                        if(verbose)System.out.println();
                     }
                 }
             }
@@ -258,16 +257,30 @@ public class GameMaster {
 		System.exit(0);//just to make sure it exits
 	}
 
+    /**
+     * Function to determine which agent has the better hand.
+     * @param hand1 player 1's hand
+     * @param hand2 player 2's hand
+     * @param ranks array of ranks indexed by agent number
+     * @param wins array of wins indexed by agent number (a draw counts as .5)
+     * @param p1 index of player 1
+     * @param p2 index of player 2
+     * @param players array of players used to get their names
+     */
+
     private static void evaluateHands(Hand hand1, Hand hand2, float[]ranks, double[]wins,int p1, int p2, ArrayList<Player> players){
         HandEvaluator hEval = new HandEvaluator();
-        if (hand1.size() != Parameters.MAX_HAND && hand2.size() != Parameters.MAX_HAND)
-            return;//neither player made it to 5 cards
+        if (hand1.size() != Parameters.MAX_HAND && hand2.size() != Parameters.MAX_HAND) {
+            if(verbose)System.out.println("No player was able to get a full hand.");
+        }
         else if (hand1.size() != Parameters.MAX_HAND) {//p2 made it to 5 but p1 didn't
             wins[p2]++;
             ranks[p2] += hEval.rankHand(hand2);
+            if(verbose)System.out.println(players.get(p2).getName()+" wins by default with "+HandEvaluator.nameHand(hEval.rankHand(hand2)));
         } else if (hand2.size() != Parameters.MAX_HAND) {//p1 made it to 5 but p2 didn't
             wins[p1]++;
             ranks[p1] += hEval.rankHand(hand2);
+            if(verbose)System.out.println(players.get(p1).getName()+" wins by default with "+HandEvaluator.nameHand(hEval.rankHand(hand1)));
         } else {//both players finished
             float rank1 = hEval.rankHand(hand1);
             float rank2 = hEval.rankHand(hand2);
@@ -302,7 +315,7 @@ public class GameMaster {
 	public static void generateGraphs(int numGraphs) {
 		for (int i = 0; i < numGraphs; i++) {
 			Graph n = new Graph(i);
-			n.generateNetwork();
+			n.generateGraph();
 			n.saveGraph();
 			n.saveGraph(true);
 		}
@@ -316,6 +329,8 @@ public class GameMaster {
 	public static Player getPlayer(String name) {
 		if (name.equalsIgnoreCase("TestPlayer"))
 			return new TestPlayer();
+        else if(name.equalsIgnoreCase("MaxPower"))
+            return new MaxPower();
 		/*else if(name.equalsIgnoreCase("YOUR AGENT HERE")
 		 * 	return new StudentAgent();
 		 */
@@ -323,6 +338,10 @@ public class GameMaster {
 		return null;
 	}
 
+    /**
+     * Sets new parameters based on a case x
+     * @param x the case to use
+     */
 	private static void changeParameters(int x){
 		switch (x) {
             case 0://smallish graph

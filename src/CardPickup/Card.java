@@ -42,10 +42,6 @@ package CardPickup;
 public class Card implements Comparable {
 
 /**
- * The picture of the card
- **/
-    //public       Image      img;
-/**
  * Card class constants
  **/
     public final static int BAD_CARD = -1;

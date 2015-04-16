@@ -4,19 +4,15 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * Node class is used for creating nodes for the network.
- * Important variables information for Attacker agents:
+ * Node class  for creating nodes in the graph.
  * 
  * nodeId - integer representing the node
- * sv - security value of a node (-1 means unknown)
- * pv - point value of a node (-1 means unknown)
- * isHoneyPot - boolean for if the node is a honeypot (-1 means unknown, 0 means false, 1 means true)
- * captured - if the node is a public entry node or has been successfully captured via attack
- * bestRoll - the highest roll on this node (if -1, the node has never been attacked), if the security value is -1, bestRoll may be used to reason what the sv might be (actual security value >= bestRoll if sv == -1)
  * neighborAmount - number of connections this node has. Will be different than neighbor.size() if the node has not been captured. (-1 means unknown)
  * neighbor - list of neighbors to this node. Will be empty if the node has not been captured
+ * trueCard - the card dealt to the node
+ * possibleCards - the set of possible cards at a node
  *
- * @author      Porag Chowdhury, Anjon Basak, Marcus Gutierrez
+ * @author      Porag Chowdhury, Anjon Basak, Marcus Gutierrez, Oscar Veliz
  * @version     11/14/2014
  */
 

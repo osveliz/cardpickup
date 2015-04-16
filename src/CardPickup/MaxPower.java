@@ -1,5 +1,6 @@
 package CardPickup;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -24,14 +25,14 @@ import java.util.Random;
  * graphs, opponent hand, horoscope, etc. intelligently and however you like.
 
  * 
- * @author Marcus Gutierrez
+ * @author Oscar
  * @version 04/15/2015
  */
-public class TestPlayer extends Player{
-	protected final String newName = "TestPlayer"; //Overwrite this variable in your player subclass
+public class MaxPower extends Player{
+	protected final String newName = "MaxPower"; //Overwrite this variable in your player subclass
 
 	/**Do not alter this constructor as nothing has been initialized yet. Please use initialize() instead*/
-	public TestPlayer() {
+	public MaxPower() {
 		super();
         playerName = newName;
 	}
@@ -66,20 +67,29 @@ public class TestPlayer extends Player{
      */
     protected void actionResult(int currentNode, Card c){
         this.currentNode = currentNode;
-        if(c!=null)
+        if(c!=null) {
             addCardToHand(c);
+        }
+        graph[currentNode].clearPossibleCards();
     }
 
     /**
      * Player logic goes here
      */
 	public Action makeAction() {
-		Random r = new Random();
-        int neighbor;
-        if (graph[currentNode].getNeighborAmount()==1)
-            neighbor = graph[currentNode].getNeighbor(0).getNodeID();
-        else
-		    neighbor = graph[currentNode].getNeighbor(r.nextInt(graph[currentNode].getNeighborAmount())).getNodeID();
+		int[] sums = new int[graph[currentNode].getNeighborAmount()];
+        for(int i = 0; i < sums.length; i++){
+            ArrayList<Card> possible = graph[currentNode].getNeighbor(i).getPossibleCards();
+            if(possible != null){
+                for(int j = 0; j < possible.size(); j++)
+                    sums[i] += possible.get(j).getRank();
+            }
+        }
+        int maxIndex = 0;
+        for(int k = 1; k < sums.length; k++)
+            if(sums[maxIndex] < sums[k])
+                maxIndex = k;
+        int neighbor = graph[currentNode].getNeighbor(maxIndex).getNodeID();
 		return new Action(ActionType.PICKUP, neighbor);
 	}
 

@@ -2,6 +2,11 @@ package CardPickup;
 
 /**
  * Player agent.
+ *
+ * NOTE TO STUDENTS: The game master will only tell the player the results of your and your opponents actions.
+ * It will not update your graph for you. That is something we left you to do so that you can update your
+ * graphs, opponent hand, horoscope, etc. intelligently and however you like.
+ *
  * @author Marcus Gutierrez
  * @version 04/15/2015
  */
@@ -46,9 +51,7 @@ public abstract class Player implements Runnable
      * returns your current location
      * @return current location
      */
-    public int getCurrentNode(){
-    	return currentNode;
-    }
+    public int getCurrentNode(){ return currentNode; }
     
     /**
      * Sets your current Hand. This does not change your actual hand, just your copy of it.
@@ -72,16 +75,30 @@ public abstract class Player implements Runnable
      * GameMaster will call this to update the player on the opponent's actions.
      * 
      * @param opponentNode Opponent's current location
-     * @param opponentPickedup Notifies if the opponent picked up a card last turn
+     * @param opponentPickedUp Notifies if the opponent picked up a card last turn
      * @param c The card that the opponent picked up, if any (null if the opponent did not pick up a card)
      */
-    protected void opponentAction(int opponentNode, boolean opponentPickedup, Card c){
+    protected void opponentAction(int opponentNode, boolean opponentPickedUp, Card c){
     	oppNode = opponentNode;
-    	if(opponentPickedup)
+    	if(opponentPickedUp)
     		oppLastCard = c;
     	else
     		oppLastCard = null;
     }
+
+    /**
+     * THIS METHOD SHOULD BE OVERRIDDEN if you wish to make computations off of your results.
+     * GameMaster will call this to update you on your actions.
+     *
+     * @param currentNode Opponent's current location
+     * @param c The card that you picked up, if any (null if you did not pick up a card)
+     */
+    protected void actionResult(int currentNode, Card c){
+        this.currentNode = currentNode;
+        if(c!=null)
+            addCardToHand(c);
+    }
+
 
     /**
      * There is code in GameMaster which will keep track of legal moves.
@@ -111,6 +128,7 @@ public abstract class Player implements Runnable
     public synchronized final void run()
     {
         try{
+            lastAction = null;
             Action a = makeAction();
             if(a != null){
                 switch(a.move){

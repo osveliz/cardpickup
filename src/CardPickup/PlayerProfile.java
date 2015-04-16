@@ -1,7 +1,7 @@
 package CardPickup;
 
 /**
- * Auxilary class for player management.
+ * Auxiliary class for player management.
  * @author Marcus G.
  */
 public class PlayerProfile {

@@ -6,10 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 /**
- * Network class is use for generating a network.
- * Game master will use this class to generate a network. 
+ * Creates graphs of nodes that contain cards and possible cards
  *
- * @author      Porag Chowdhury, Anjon Basak, Oscar Veliz
+ * @author      Porag Chowdhury, Anjon Basak, Oscar Veliz, Marcus Gutierezz
  * @version     2015/04/12
  */
 
@@ -18,62 +17,41 @@ public class Graph {
 	private String fullGraphName;//for when the graph is modified by an agent i.e. Miners-1
 	private Node[] nodes = new Node[Parameters.NUMBER_OF_NODES];
 	private Hand[] hand;
-	private boolean graphGenerated;
-
-	public Graph(){}
 
 	/**
-	 * Constructor used by Game master to initialize network.
-	 * @param graphName An integer indicates network name
+	 * Constructor used by Game master to initialize graph.
+	 * @param graphName An integer indicates graph name
 	 */
 	public Graph(int graphName)
 	{
 		name = graphName;
 		fullGraphName = ""+name;//for now
-		graphGenerated = false;
 		for(int i=0; i<Parameters.NUMBER_OF_NODES; i++)
 		{
 			nodes[i] = new Node();
 			nodes[i].setNodeID(i);
 		}
-		//generateNetwork();
 	}
 
 	/**
-	 * Constructor used by Game master to initialize network.
-	 * @param networkName An integer indicates network name
-	 * @param numNodes An integer indicates number of nodes in the network
-	 */
-	/*public Graph(int networkName, int numNodes)
-	{
-		name = networkName;
-		fullGraphName = "" + name;
-        nodes = new Node[numNodes];
-		for(int i=0; i<numNodes; i++){
-			nodes[i] = new Node();
-			nodes[i].setNodeID(i);
-		}
-	}*/
-
-	/**
-	 * Returns network name.
-	 * @return network name
+	 * Returns graph name.
+	 * @return graph name
 	 */
 	public int getName() {
 		return name;
 	}
 
 	/**
-	 * Sets network full name.
-	 * @param name network name
+	 * Sets full graph name.
+	 * @param name graph name
 	 */
 	public void setName(String name) {
 		fullGraphName = name;
 	}
 
 	/**
-	 * Sets network name.
-	 * @param name network name
+	 * Sets graph name.
+	 * @param name graph name
 	 */
 	public void setName(int name) {
 		this.name = name;
@@ -95,47 +73,6 @@ public class Graph {
 		}
 		return null;
 	}
-	
-	public Hand getHand(int playerNum){
-		Hand h = new Hand();
-		for(int i = 0; i < hand[playerNum].getNumHole(); i++)
-			h.addHoleCard(new Card(hand[playerNum].getHoleCard(i).toString()));
-		return h;
-	}
-
-	/**
-	 * Adds edges to the node.
-	 * @param routerIndex An integer indicates router id
-	 * @param adjacencyMatrix A two dimensional array for adjacency
-	 */
-	/*public void addMoreEdges(int routerIndex, int [][] adjacencyMatrix)
-	{
-		ArrayList<Integer> routerNeighbors = new ArrayList<Integer>();
-		Random r = new Random(name);
-		int neighbourCount = 0;
-		for (int i = 0; i < nodes.length; i++)
-		{
-			if(adjacencyMatrix[routerIndex][i] == 1){
-				routerNeighbors.add(i);
-				neighbourCount++;
-			}
-		}
-		if(neighbourCount >= Parameters.MAX_ROUTER_EDGES)
-			return;
-		while(neighbourCount < Parameters.MAX_ROUTER_EDGES)
-		{
-			int neighborindex= r.nextInt(nodes.length);
-			if(neighborindex != routerIndex){
-				if(!routerNeighbors.contains(neighborindex))
-				{
-					adjacencyMatrix[routerIndex][neighborindex]=1;
-					adjacencyMatrix[neighborindex][routerIndex]=1;
-					routerNeighbors.add(neighborindex);
-					neighbourCount++;
-				}
-			}
-		}
-	}*/
 
 	/**
 	 * Returns boolean validating a node to be eligible for Neighbor or not
@@ -167,6 +104,12 @@ public class Graph {
 		return nodes.length;
 	}
 
+    /**
+     * Hands are dealt first and need to be saved
+     * @param player player number
+     * @param c1 first card
+     * @param c2 second card
+     */
 	public void printHand(int player, Card c1, Card c2) {
 		PrintWriter writer;
 		try {
@@ -232,6 +175,9 @@ public class Graph {
 		}
 	}
 
+    /**
+     * Default save of graph without possible cards
+     */
 	public void saveGraph(){
 		saveGraph(false);
 	}
@@ -257,9 +203,9 @@ public class Graph {
 	}
 
 	/**
-	 * Generates a random network based on the parameter class and prints it in a file
+	 * Generates a random graph
 	 */
-	public void generateNetwork()
+	public void generateGraph()
 	{
 		//Network network = new Network(networkName, numNodes);
 		Random r = new Random(name);
@@ -400,50 +346,47 @@ public class Graph {
 
 			}
 		}
-		graphGenerated = true;
 	}
 
 	/**
-	 * This method should never be called before generateNetwork()
+	 * This method should never be called before generateGraph()
 	 * @return a copy of the graph with the true card and possible cards on each node
 	 */
 	public Node[] generateCopyGraph(){
-		//if(graphGenerated){
-			Node[] graph = new Node[nodes.length];
-			for(int i = 0; i < nodes.length; i++){
-				graph[i] = nodes[i].copyNode();
-			}
-			for(int i = 0; i < nodes.length; i++){
-				for(int j = 0; j < nodes[i].getNeighborAmount(); j++){
-					int neighborID = nodes[i].getNeighbor(j).getNodeID();
-					graph[i].addNeighbor(graph[neighborID]);
-				}
-			}
-			return graph;
-		//}
-		//return null;
+        Node[] graph = new Node[nodes.length];
+        for(int i = 0; i < nodes.length; i++){
+            graph[i] = nodes[i].copyNode();
+        }
+        for(int i = 0; i < nodes.length; i++){
+            for(int j = 0; j < nodes[i].getNeighborAmount(); j++){
+                int neighborID = nodes[i].getNeighbor(j).getNodeID();
+                graph[i].addNeighbor(graph[neighborID]);
+            }
+        }
+        return graph;
 	}
 
 	/**
-	 * This method should never be called before generateNetwork()
+	 * This method should never be called before generateGraph()
 	 * @return a copy of the graph without the true card on each node
 	 */
 	public Node[] generateHiddenGraph(){
-		//if(graphGenerated){
-			Node[] playerGraph = new Node[nodes.length];
-			for(int i = 0; i < nodes.length; i++)
-				playerGraph[i] = nodes[i].getHiddenNode();
-			for(int i = 0; i < nodes.length; i++){
-				for(int j = 0; j < nodes[i].getNeighborAmount(); j++){
-					int neighborID = nodes[i].getNeighbor(j).getNodeID();
-					playerGraph[i].addNeighbor(playerGraph[neighborID]);
-				}
-			}
-			return playerGraph;
-		//}
-		//return null;
+        Node[] playerGraph = new Node[nodes.length];
+        for(int i = 0; i < nodes.length; i++)
+            playerGraph[i] = nodes[i].getHiddenNode();
+        for(int i = 0; i < nodes.length; i++){
+            for(int j = 0; j < nodes[i].getNeighborAmount(); j++){
+                int neighborID = nodes[i].getNeighbor(j).getNodeID();
+                playerGraph[i].addNeighbor(playerGraph[neighborID]);
+            }
+        }
+        return playerGraph;
 	}
 
+    /**
+     * Returns the nodes
+     * @return the nodes
+     */
     public Node[] getNodes(){
         return nodes;
     }
