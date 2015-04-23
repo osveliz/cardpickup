@@ -99,13 +99,14 @@ public class GameMaster {
 				}
 				break;
 			default:
-				opponent.opponentAction(cpProfile.getCurrentLocation(), false, null);
+				opponent.opponentAction(a.nodeID, false, null);
                 currentPlayer.actionResult(cpProfile.getCurrentLocation(),null);
-				if(verbose)System.out.println(currentPlayer.getName() + " performed an invalid action");
+				if(verbose)System.out.println(currentPlayer.getName() + " performed an invalid action default case hit");
 				break;
 			}
 		}else{
-			opponent.opponentAction(-1, false, null);
+			opponent.opponentAction(cpProfile.getCurrentLocation(), false, null);
+            currentPlayer.actionResult(cpProfile.getCurrentLocation(),null);
 			if(verbose)System.out.println(currentPlayer.getName() + " performed an invalid action");
 		}
 	}
@@ -121,7 +122,7 @@ public class GameMaster {
 	private static boolean isValidMove(Node[] graph, int playerLocation, int playerDestination){
 		if(playerLocation == playerDestination)
 			return true;
-		for(int i = 0; i < graph[i].getNeighborAmount(); i++){
+		for(int i = 0; i < graph[playerLocation].getNeighborAmount(); i++){
 			if(graph[playerLocation].getNeighbor(i).getNodeID() == playerDestination)
 				return true;
 		}
@@ -222,8 +223,8 @@ public class GameMaster {
 	 * @param args not using any command line arguments
 	 */
 	public static void main(String[] args) {
-		int numGames = 5;
-		int parameterSetting = 2;
+		int numGames = 10;
+		int parameterSetting = 4;
 		changeParameters(parameterSetting);
 		generateGraphs(numGames);
 
@@ -231,6 +232,7 @@ public class GameMaster {
         ArrayList<Player> players = new ArrayList<Player>();
         players.add(new TestPlayer());
         players.add(new MaxPower());
+        players.add(new HankScorpio());
 
         float[] ranks = new float[players.size()];
         double[] wins = new double[players.size()];
@@ -251,7 +253,7 @@ public class GameMaster {
         System.out.println("\nTotal Wins");
         for(int i = 0; i < wins.length; i++)
             System.out.println(players.get(i).getName()+" "+wins[i]);
-        System.out.println("\nCumulative Card Ranks");
+        System.out.println("\nCumulative Hand Ranks");
         for(int i = 0; i < ranks.length; i++)
             System.out.println(players.get(i).getName()+" "+ranks[i]);
 		System.exit(0);//just to make sure it exits
@@ -331,6 +333,8 @@ public class GameMaster {
 			return new TestPlayer();
         else if(name.equalsIgnoreCase("MaxPower"))
             return new MaxPower();
+        else if(name.equalsIgnoreCase("HankScorpio"))
+            return new HankScorpio();
 		/*else if(name.equalsIgnoreCase("YOUR AGENT HERE")
 		 * 	return new StudentAgent();
 		 */
