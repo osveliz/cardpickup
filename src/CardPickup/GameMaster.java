@@ -27,6 +27,7 @@ public class GameMaster {
      * @param gameSeed seed for the game
 	 */
 	public static void initializePlayers(Graph g, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2, int gameSeed){
+
 		//Player 1
         p1.setGraph(Parser.parseGraph(gameSeed+".hidden").generateHiddenGraph());
         p1Profile.setCurrentHand(Parser.parseHand(gameSeed,1));//player 1
@@ -34,6 +35,7 @@ public class GameMaster {
 		//Update the player 1
         p1.setHand(Parser.parseHand(gameSeed,1));
 		p1.setCurrentNode(p1Profile.getCurrentLocation());
+
 		
 		//Player 2
 		p2.setGraph(g.generateHiddenGraph());
@@ -42,11 +44,16 @@ public class GameMaster {
 		//Update the player 2
         p2.setHand(Parser.parseHand(gameSeed, 2));
 		p2.setCurrentNode(p2Profile.getCurrentLocation());
+
 		
 		//Notify players of their opponent
 		p1.setOpponentNode(p2Profile.getCurrentLocation());	//subject to change
 		p2.setOpponentNode(p1Profile.getCurrentLocation());	//subject to change
-	}
+
+        //initialize players
+        p1.initialize();
+        p2.initialize();
+    }
 
 	/**
 	 * Has one player execute a move
