@@ -120,22 +120,6 @@ public abstract class Player
     /**Allows players to make any initial computations*/
     public abstract void initialize();
 
-    /*/**
-     * Uses a thread to execute this method with a time limit. This method forces the subclass player
-     * to make a single action (pickup or move a card). Running out of time before making an action,
-     * causing an exception, and returning a null/invalid action will all result in a wasted turn.
-     */
-    /*public synchronized final void run()
-    {
-        try{
-        	handleAction();
-        }catch (Exception e){
-            System.out.println("Error with "+playerName);
-            e.printStackTrace();
-        }
-        turnsRemaining--;
-    }*/
-    
     /**
      * This method forces the subclass player to make a single action (pickup or move a card).
      * Returning a null/invalid action will result in a wasted turn.

@@ -1,5 +1,8 @@
 package CardPickup;
 
+/**
+ * Creates timed threads for the Player. Called by GameMaster when updating the player and getting the player's action.
+ */
 public class PlayerDriver implements Runnable {
 	
 	/**Used to know which Player method to call*/
@@ -15,8 +18,8 @@ public class PlayerDriver implements Runnable {
 
 	/**
 	 * Constructor used for Player's initialize() and makeAction() methods
-	 * @param state
-	 * @param player
+	 * @param state a PlayerState
+	 * @param player a Player
 	 */
 	public PlayerDriver(PlayerState state, Player player){
 		this.state = state;
@@ -25,10 +28,10 @@ public class PlayerDriver implements Runnable {
 	
 	/**
 	 * Constructor used for the Player's actionResult() method
-	 * @param state
-	 * @param player
-	 * @param playerNode
-	 * @param c
+	 * @param state a PlayerState
+	 * @param player a Player
+	 * @param playerNode the number of the node
+	 * @param c Card
 	 */
 	public PlayerDriver(PlayerState state, Player player, int playerNode, Card c){
 		this.state = state;
@@ -39,11 +42,11 @@ public class PlayerDriver implements Runnable {
 	
 	/**
 	 * Constructor used for the Player's opponentAction() method
-	 * @param state
-	 * @param player
-	 * @param opponentNode
-	 * @param opponentPickedUp
-	 * @param c
+	 * @param state a PlayerState
+	 * @param player a Player
+	 * @param opponentNode node id where opponent is at
+	 * @param opponentPickedUp true when opponent picks up a card
+	 * @param c card opponent picked up
 	 */
 	public PlayerDriver(PlayerState state, Player player, int opponentNode, boolean opponentPickedUp, Card c){
 		this.state = state;

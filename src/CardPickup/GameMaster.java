@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Pits Attacker and Defender agents against one another in the name of Science!
  * 
  * STUDENTS: add your Player to the sections in main that say  "add Players here".
- * Also add your defender to the getPlayer() method.
+ * Also add your agent to the getPlayer() method.
  * You may also want to edit the Parameters in the changeParameters() method when testing.
  * Trust that these values will be changed when the full tournament is run.
  * 
@@ -15,7 +15,7 @@ import java.util.ArrayList;
  */
 public class GameMaster {
 
-	private static boolean verbose = true; //Set to false if you do not want much detail printed to console
+	private static boolean verbose = false; //Set to false if you do not want much detail printed to console
 
 	/**
 	 * Tries to execute a Player class' method by using threads a layer of protection in case
@@ -54,7 +54,6 @@ public class GameMaster {
 	 * @param gameSeed seed for the game
 	 */
 	public static void initializePlayers(Graph g, PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2, int gameSeed){
-
 		//Player 1
 		p1.setGraph(Parser.parseGraph(gameSeed+".hidden").generateHiddenGraph());
 		p1Profile.setCurrentHand(Parser.parseHand(gameSeed,1));//player 1
@@ -62,7 +61,6 @@ public class GameMaster {
 		//Update the player 1
 		p1.setHand(Parser.parseHand(gameSeed,1));
 		p1.setCurrentNode(p1Profile.getCurrentLocation());
-
 
 		//Player 2
 		p2.setGraph(g.generateHiddenGraph());
@@ -83,7 +81,7 @@ public class GameMaster {
 	}
 
 	/*/**
-	 * OUTDATED!!!!!!!!!!!!!!!!
+	 * DEPRECATED!!!!!!!!!!!!!!!!!!!!!!
 	 * Has one player execute a move
 	 * @param p player who will execute a single move
 	 */
@@ -107,6 +105,8 @@ public class GameMaster {
 	 */
 	private static void registerTurn(Node[] graph, PlayerProfile cpProfile, Player currentPlayer, Player opponent){
 		Action a = currentPlayer.getLastAction();
+        if(a == null)//just in case the player couldn't get a move in.
+            a = new Action(ActionType.MOVE,currentPlayer.getCurrentNode());
 		if(isValidMove(graph, cpProfile.getCurrentLocation(), a.nodeID)){
 			switch(a.move){
 			case MOVE:
@@ -270,8 +270,8 @@ public class GameMaster {
 	 * @param args not using any command line arguments
 	 */
 	public static void main(String[] args) {
-		int numGames = 10;
-		int parameterSetting = 4;
+		int numGames = 25;
+		int parameterSetting = 1;
 		changeParameters(parameterSetting);
 		generateGraphs(numGames);
 
@@ -280,6 +280,23 @@ public class GameMaster {
 		players.add(new TestPlayer());
 		players.add(new MaxPower());
 		players.add(new HankScorpio());
+        /*//players.add(new agent007());
+        players.add(new AgentPlayer());
+        players.add(new AriMiguelPlayer());
+        players.add(new CharlieBrown());
+        //players.add(new Debakar());
+        players.add(new DragonSaifPlayer());
+        players.add(new Killager());
+        players.add(new KNPlayer());
+        //players.add(new LCPlayer());
+        players.add(new MaxUtility());
+        players.add(new PokerPlayer());
+        players.add(new Roboken());
+        players.add(new Slade77());
+        players.add(new SuperDaniel());
+        players.add(new TwistedFate());
+        players.add(new WhoDatPlayer());
+        players.add(new Spooky());*/
 
 		float[] ranks = new float[players.size()];
 		double[] wins = new double[players.size()];
@@ -382,6 +399,40 @@ public class GameMaster {
 			return new MaxPower();
 		else if(name.equalsIgnoreCase("HankScorpio"))
 			return new HankScorpio();
+        /*else if(name.equalsIgnoreCase("WhoDatPlayer"))
+            return new WhoDatPlayer();
+        else if(name.equalsIgnoreCase("SuperDaniel"))
+            return new SuperDaniel();
+        else if(name.equalsIgnoreCase("Slade77"))
+            return new Slade77();
+        else if(name.equalsIgnoreCase("Roboken"))
+            return new Roboken();
+        else if(name.equalsIgnoreCase("PokerPlayer"))
+            return new PokerPlayer();
+        else if(name.equalsIgnoreCase("MaxUtility"))
+            return new MaxUtility();
+        else if(name.equalsIgnoreCase("LCPlayer"))
+            return new LCPlayer();
+        else if(name.equalsIgnoreCase("KNPlayer"))
+            return new KNPlayer();
+        else if(name.equalsIgnoreCase("Killager"))
+            return new Killager();
+        else if(name.equalsIgnoreCase("DragonSaifPlayer"))
+            return new DragonSaifPlayer();
+        else if(name.equalsIgnoreCase("Debakar Shamanta"))
+            return new Debakar();
+        else if(name.equalsIgnoreCase("Charlie Brown"))
+            return new CharlieBrown();
+        else if(name.equalsIgnoreCase("AriMiguel"))
+            return new AriMiguelPlayer();
+        else if(name.equalsIgnoreCase("AgentPlayer"))
+            return new AgentPlayer();
+        else if(name.equalsIgnoreCase("agent007"))
+            return new agent007();
+        else if(name.equalsIgnoreCase("Twisted Fate"))
+            return new TwistedFate();
+        else if(name.equalsIgnoreCase("Spooky"))
+            return new Spooky();*/
 		/*else if(name.equalsIgnoreCase("YOUR AGENT HERE")
 		 * 	return new StudentAgent();
 		 */
