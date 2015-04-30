@@ -16,4 +16,12 @@ public class Parameters {
     public static int NUM_TURNS = 10;
     /**Identifies the maximum hand size for each player*/
     public static final int MAX_HAND = 5;
+    /**Time limit for initialization in milliseconds*/
+    public static final int INIT_TIME = 1000;
+    /**Time limit for calculating an action result in milliseconds*/
+    public static final int RESULT_TIME = 1000;
+    /**Time limit for calculating an opponent's action result in milliseconds*/
+    public static final int OPP_RESULT_TIME = 1000;
+    /**Time limit for making an action in milliseconds*/
+    public static final int ACTION_TIME = 500;
 }

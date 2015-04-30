@@ -10,7 +10,7 @@ package CardPickup;
  * @author Marcus Gutierrez
  * @version 04/15/2015
  */
-public abstract class Player implements Runnable
+public abstract class Player
 {
     protected String playerName = "defaultPlayer"; //Overwrite this variable in your player subclass
     private Action lastAction;
@@ -120,40 +120,48 @@ public abstract class Player implements Runnable
     /**Allows players to make any initial computations*/
     public abstract void initialize();
 
-    /**
+    /*/**
      * Uses a thread to execute this method with a time limit. This method forces the subclass player
      * to make a single action (pickup or move a card). Running out of time before making an action,
      * causing an exception, and returning a null/invalid action will all result in a wasted turn.
      */
-    public synchronized final void run()
+    /*public synchronized final void run()
     {
         try{
-            lastAction = null;
-            Action a = makeAction();
-            if(a != null){
-                switch(a.move){
-                case MOVE:
-                	if(isValidAction(a)){
-                		move(a.nodeID);
-                		lastAction = a;
-                	}
-                	break;
-                case PICKUP:
-                	if(isValidAction(a)){
-                		pickup(a.nodeID);
-                		lastAction = new Action(a.move, a.nodeID);
-                	}
-                	break;
-                default:
-                	lastAction = null; //indicates that the player has made an erroneous move
-                	break;
-                }
-            }
+        	handleAction();
         }catch (Exception e){
             System.out.println("Error with "+playerName);
             e.printStackTrace();
         }
         turnsRemaining--;
+    }*/
+    
+    /**
+     * This method forces the subclass player to make a single action (pickup or move a card).
+     * Returning a null/invalid action will result in a wasted turn.
+     */
+    public void handleAction(){
+    	lastAction = null;
+        Action a = makeAction();
+        if(a != null){
+            switch(a.move){
+            case MOVE:
+            	if(isValidAction(a)){
+            		move(a.nodeID);
+            		lastAction = a;
+            	}
+            	break;
+            case PICKUP:
+            	if(isValidAction(a)){
+            		pickup(a.nodeID);
+            		lastAction = new Action(a.move, a.nodeID);
+            	}
+            	break;
+            default:
+            	lastAction = null; //indicates that the player has made an erroneous move
+            	break;
+            }
+        }
     }
 
 
