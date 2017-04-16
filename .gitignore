@@ -1,3 +1,8 @@
 *.html
 *.html
 src/commons-csv-1.0/LICENSE.txt
+*.cards
+*.class
+*.hidden
+build/jar/CardPickup.jar
+*.graph
