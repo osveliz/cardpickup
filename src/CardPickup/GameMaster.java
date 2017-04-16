@@ -3,19 +3,82 @@ package CardPickup;
 import java.util.ArrayList;
 
 /**
- * Pits Attacker and Defender agents against one another in the name of Science!
- * 
- * STUDENTS: add your Player to the sections in main that say  "add Players here".
- * Also add your agent to the getPlayer() method.
- * You may also want to edit the Parameters in the changeParameters() method when testing.
- * Trust that these values will be changed when the full tournament is run.
+ * Play a graph variant of Poker.
+ * Add your agent to the list of agents in main() AND to the getPlayer() method
+ * Note you can change the parameter settings and the number of games by altering numGames and parameterSetting
  * 
  * @author Marcus Gutierrez and Oscar Veliz
- * @version 2014/15/14
+ * @version 2017/15/4
  */
 public class GameMaster {
 
 	private static boolean verbose = false; //Set to false if you do not want much detail printed to console
+	private static int numGames = 25; //use a small number for quick tests, a large one to be comprehensive
+	private static int parameterSetting = 1; //see changeParameters()
+	
+	/**
+	 * You should edit this method to include your player agent
+	 * @param name The name of your player agent
+	 * @return An instance of your Player agent
+	 */
+	public static Player getPlayer(String name) {
+		if (name.equalsIgnoreCase("TestPlayer"))
+			return new TestPlayer();
+		else if(name.equalsIgnoreCase("MaxPower"))
+			return new MaxPower();
+		else if(name.equalsIgnoreCase("HankScorpio"))
+			return new HankScorpio();
+		////////////////////////////////////
+		//your player here
+		////////////////////////////////////
+        /*else if(name.equalsIgnoreCase("YOUR AGENT HERE")
+		 * 	return new StudentAgent();
+		 */
+		// in case your name was not added
+		return null;
+	}
+	/**
+	 * Runs the tournament
+	 * 
+	 * @param args not using any command line arguments
+	 */
+	public static void main(String[] args) {
+		changeParameters(parameterSetting);
+		generateGraphs(numGames);
+
+		ArrayList<Player> players = new ArrayList<Player>();
+		players.add(new TestPlayer());
+		players.add(new MaxPower());
+		players.add(new HankScorpio());
+		////////////////////////////////////
+		//your player here
+		////////////////////////////////////
+
+		float[] ranks = new float[players.size()];
+		double[] wins = new double[players.size()];
+		int numPlayers = players.size();
+		for(int p1 = 0; p1 < numPlayers; p1++) {
+			for(int p2 = p1+1; p2 < numPlayers; p2++) {
+				if(p1!=p2) {//avoid playing against yourself
+					for (int game = 0; game < numGames; game++) {
+						Hand[] hands = runMatches(game, players.get(p1).getName(), players.get(p2).getName());
+						if(verbose)System.out.println("Result for Game "+game);
+						evaluateHands(hands[0], hands[1], ranks, wins, p1, p2, players);
+						evaluateHands(hands[2],hands[3],ranks,wins,p1,p2,players);
+						if(verbose)System.out.println();
+					}
+				}
+			}
+		}
+		System.out.println("\nTotal Wins");
+		for(int i = 0; i < wins.length; i++)
+			System.out.println(players.get(i).getName()+" "+wins[i]);
+		System.out.println("\nCumulative Hand Ranks");
+		for(int i = 0; i < ranks.length; i++)
+			System.out.println(players.get(i).getName()+" "+ranks[i]);
+		System.exit(0);//just to make sure it exits
+	}
+
 
 	/**
 	 * Tries to execute a Player class' method by using threads a layer of protection in case
@@ -79,22 +142,6 @@ public class GameMaster {
 		tryPlayer(new PlayerDriver(PlayerState.INIT, p1)); //Try to initialize player 1
 		tryPlayer(new PlayerDriver(PlayerState.INIT, p2)); //Try to initialize player 1
 	}
-
-	/*/**
-	 * DEPRECATED!!!!!!!!!!!!!!!!!!!!!!
-	 * Has one player execute a move
-	 * @param p player who will execute a single move
-	 */
-	/*private static void oneTurn(Player p){
-		Thread playerThread = new Thread(p);
-		playerThread.start();
-		for(int sleep = 0; sleep < 500; sleep+=10){
-			if(playerThread.isAlive())
-				try {Thread.sleep(10);} catch (Exception e) {e.printStackTrace();}
-			else
-				return;
-		}
-	}*/
 
 	/**
 	 * Makes necessary changes to local version of the graph and notifies/updates the current and opponent player
@@ -265,64 +312,6 @@ public class GameMaster {
 		return hands;
 	}
 
-	/**
-	 * Runs the tournament
-	 * 
-	 * @param args not using any command line arguments
-	 */
-	public static void main(String[] args) {
-		int numGames = 25;
-		int parameterSetting = 1;
-		changeParameters(parameterSetting);
-		generateGraphs(numGames);
-
-		//add your agent here
-		ArrayList<Player> players = new ArrayList<Player>();
-		players.add(new TestPlayer());
-		players.add(new MaxPower());
-		players.add(new HankScorpio());
-        /*//players.add(new agent007());
-        players.add(new AgentPlayer());
-        players.add(new AriMiguelPlayer());
-        players.add(new CharlieBrown());
-        //players.add(new Debakar());
-        players.add(new DragonSaifPlayer());
-        players.add(new Killager());
-        players.add(new KNPlayer());
-        //players.add(new LCPlayer());
-        players.add(new MaxUtility());
-        players.add(new PokerPlayer());
-        players.add(new Roboken());
-        players.add(new Slade77());
-        players.add(new SuperDaniel());
-        players.add(new TwistedFate());
-        players.add(new WhoDatPlayer());
-        players.add(new Spooky());*/
-
-		float[] ranks = new float[players.size()];
-		double[] wins = new double[players.size()];
-		int numPlayers = players.size();
-		for(int p1 = 0; p1 < numPlayers; p1++) {
-			for(int p2 = p1+1; p2 < numPlayers; p2++) {
-				if(p1!=p2) {//avoid playing against yourself
-					for (int game = 0; game < numGames; game++) {
-						Hand[] hands = runMatches(game, players.get(p1).getName(), players.get(p2).getName());
-						if(verbose)System.out.println("Result for Game "+game);
-						evaluateHands(hands[0], hands[1], ranks, wins, p1, p2, players);
-						evaluateHands(hands[2],hands[3],ranks,wins,p1,p2,players);
-						if(verbose)System.out.println();
-					}
-				}
-			}
-		}
-		System.out.println("\nTotal Wins");
-		for(int i = 0; i < wins.length; i++)
-			System.out.println(players.get(i).getName()+" "+wins[i]);
-		System.out.println("\nCumulative Hand Ranks");
-		for(int i = 0; i < ranks.length; i++)
-			System.out.println(players.get(i).getName()+" "+ranks[i]);
-		System.exit(0);//just to make sure it exits
-	}
 
 	/**
 	 * Function to determine which agent has the better hand.
@@ -388,58 +377,6 @@ public class GameMaster {
 		}
 	}
 
-	/**
-	 * You should edit this method to include your player agent
-	 * @param name The name of your player agent
-	 * @return An instance of your Player agent
-	 */
-	public static Player getPlayer(String name) {
-		if (name.equalsIgnoreCase("TestPlayer"))
-			return new TestPlayer();
-		else if(name.equalsIgnoreCase("MaxPower"))
-			return new MaxPower();
-		else if(name.equalsIgnoreCase("HankScorpio"))
-			return new HankScorpio();
-        /*else if(name.equalsIgnoreCase("WhoDatPlayer"))
-            return new WhoDatPlayer();
-        else if(name.equalsIgnoreCase("SuperDaniel"))
-            return new SuperDaniel();
-        else if(name.equalsIgnoreCase("Slade77"))
-            return new Slade77();
-        else if(name.equalsIgnoreCase("Roboken"))
-            return new Roboken();
-        else if(name.equalsIgnoreCase("PokerPlayer"))
-            return new PokerPlayer();
-        else if(name.equalsIgnoreCase("MaxUtility"))
-            return new MaxUtility();
-        else if(name.equalsIgnoreCase("LCPlayer"))
-            return new LCPlayer();
-        else if(name.equalsIgnoreCase("KNPlayer"))
-            return new KNPlayer();
-        else if(name.equalsIgnoreCase("Killager"))
-            return new Killager();
-        else if(name.equalsIgnoreCase("DragonSaifPlayer"))
-            return new DragonSaifPlayer();
-        else if(name.equalsIgnoreCase("Debakar Shamanta"))
-            return new Debakar();
-        else if(name.equalsIgnoreCase("Charlie Brown"))
-            return new CharlieBrown();
-        else if(name.equalsIgnoreCase("AriMiguel"))
-            return new AriMiguelPlayer();
-        else if(name.equalsIgnoreCase("AgentPlayer"))
-            return new AgentPlayer();
-        else if(name.equalsIgnoreCase("agent007"))
-            return new agent007();
-        else if(name.equalsIgnoreCase("Twisted Fate"))
-            return new TwistedFate();
-        else if(name.equalsIgnoreCase("Spooky"))
-            return new Spooky();*/
-		/*else if(name.equalsIgnoreCase("YOUR AGENT HERE")
-		 * 	return new StudentAgent();
-		 */
-		// in case your name was not added
-		return null;
-	}
 
 	/**
 	 * Sets new parameters based on a case x
