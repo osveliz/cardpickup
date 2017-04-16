@@ -123,7 +123,7 @@ public class GameMaster {
 				currentPlayer.setCurrentNode(a.nodeID);
 				//If the node's card has not been picked up yet
 				if(graph[a.nodeID].getPossibleCards().size() > 0){
-					currentPlayer.addCardToHand(new Card(graph[a.nodeID].getCard().toString()));
+					//currentPlayer.addCardToHand(new Card(graph[a.nodeID].getCard().toString()));
 					cpProfile.addCardToHand(new Card(graph[a.nodeID].getCard().toString()));
 					tryPlayer(new PlayerDriver(PlayerState.OPP_RESULT, opponent, a.nodeID, true, new Card(graph[a.nodeID].getCard().toString()))); //Try to notify opponent of result
 					tryPlayer(new PlayerDriver(PlayerState.RESULT, currentPlayer, a.nodeID, new Card(graph[a.nodeID].getCard().toString()))); //Try to notify player of result
