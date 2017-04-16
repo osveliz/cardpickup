@@ -9,3 +9,6 @@ build/jar/CardPickup.jar
 *.html
 *.html
 *.html
+doc/package-list
+doc/script.js
+*.css

@@ -11,7 +11,7 @@
     <property name="main-class"  value="CardPickup.GameMaster"/>
   
   <path id="classpath">
-        <fileset dir="lib" includes="**/*.jar"/>
+        <fileset dir="${lib.dir}" includes="commons-csv-1.0/*.jar"/>
     </path>
     <target name="clean">
         <delete dir="${build.dir}"/>
