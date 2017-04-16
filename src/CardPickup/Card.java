@@ -233,7 +233,7 @@ public class Card implements Comparable {
     
 /*********************************
  * shortName() like toString() but shorter
- * * @return The String description of this Card.
+ * @return The String description of this Card.
  *
  **/
     public String shortName() {

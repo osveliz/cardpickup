@@ -93,6 +93,7 @@ public class Parser
      * Parses a hand
      * @param fileNumber ie 0.graph
      * @param player 1 or 2
+     * @return the hand
      */
     public static Hand parseHand(int fileNumber, int player){
         boolean deleteJunkFile = false;

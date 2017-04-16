@@ -226,6 +226,7 @@ public class GameMaster {
 	 * @param gameSeed number representing the seed used to generate the graph
 	 * @param p1Name The player that will act first in the first round of a match (will act as player 2 in the second round)
 	 * @param p2Name The player that will act second in the first round of a match (will act as player 1 in the first round)
+	 * @return the hands
 	 */
 	public static Hand[] runMatches(int gameSeed, String p1Name, String p2Name){
 		Hand[] hands = new Hand[4];//4 hands p1 & p2 vs p2 and p1

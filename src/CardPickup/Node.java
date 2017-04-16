@@ -32,6 +32,7 @@ public class Node
 	
 	/**
      * used for comparison purposes.
+     * @param id the id of the node to compare
      */
 	public Node(int id){
 		nodeID = id;
@@ -77,6 +78,7 @@ public class Node
 
 	/**
      * Sets the nodeId
+     * @param nodeID the new node ID
      */
 	public void setNodeID(int nodeID)
 	{
@@ -85,6 +87,7 @@ public class Node
 	
 	/**
 	 * Returns neighborAmount
+	 * @return the number of neighbors
 	 */
     public int getNeighborAmount(){
         return neighbor.size();
@@ -103,6 +106,7 @@ public class Node
 
 	/**
      * Returns the neighbor
+     * @param idx the index in the list of neighbors
      * @return Node of idx
      */
 	public Node getNeighbor(int idx)
@@ -122,6 +126,7 @@ public class Node
 	/**
 	 * Overridden equals method that just compares NodeID
      * @param o Checks if two id's are the same when o is a Node type
+     * @return true if the node id's match
 	 */
 	public final boolean equals(Node o){
         return o.getNodeID() == nodeID;
