@@ -6,3 +6,6 @@ src/commons-csv-1.0/LICENSE.txt
 *.hidden
 build/jar/CardPickup.jar
 *.graph
+*.html
+*.html
+*.html
