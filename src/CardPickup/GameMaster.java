@@ -126,7 +126,8 @@ public class GameMaster {
 		p1.setCurrentNode(p1Profile.getCurrentLocation());
 
 		//Player 2
-		p2.setGraph(g.generateHiddenGraph());
+		//p2.setGraph(g.generateHiddenGraph());
+		p2.setGraph(Parser.parseGraph(gameSeed+".hidden").generateHiddenGraph());
 		p2Profile.setCurrentHand(Parser.parseHand(gameSeed, 2));
 		p2Profile.setCurrentLocation(1);
 		//Update the player 2
