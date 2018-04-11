@@ -12,10 +12,10 @@ import java.util.ArrayList;
  */
 public class GameMaster {
 
-	private static boolean verbose = false; //Set to false if you do not want much detail printed to console
-	private static int numGames = 25; //use a small number for quick tests, a large one to be comprehensive
+	private static boolean verbose = true; //Set to false if you do not want much detail printed to console
+	private static int numGames = 5; //use a small number for quick tests, a large one to be comprehensive
 	private static int parameterSetting = 1; //see changeParameters()
-	
+	private static Parameters param;
 	/**
 	 * You should edit this method to include your player agent
 	 * @param name The name of your player agent
@@ -43,8 +43,9 @@ public class GameMaster {
 	 * @param args not using any command line arguments
 	 */
 	public static void main(String[] args) {
-		changeParameters(parameterSetting);
-		generateGraphs(numGames);
+		param = new Parameters();
+		changeParameters(parameterSetting,param);
+		Graph[] graphs = generateGraphs(numGames);
 
 		ArrayList<Player> players = new ArrayList<Player>();
 		players.add(new TestPlayer());
@@ -89,13 +90,13 @@ public class GameMaster {
 	private static void tryPlayer(PlayerDriver pDriver){
 		int timeLimit;
 		if(pDriver.state == PlayerState.INIT)
-			timeLimit = Parameters.INIT_TIME;
+			timeLimit = param.INIT_TIME;
 		else if(pDriver.state == PlayerState.RESULT)
-			timeLimit = Parameters.RESULT_TIME;
+			timeLimit = param.RESULT_TIME;
 		else if(pDriver.state == PlayerState.OPP_RESULT)
-			timeLimit = Parameters.OPP_RESULT_TIME;
+			timeLimit = param.OPP_RESULT_TIME;
 		else
-			timeLimit = Parameters.ACTION_TIME;
+			timeLimit = param.ACTION_TIME;
 
 		Thread playerThread = new Thread(pDriver);
 		playerThread.start();
@@ -234,13 +235,14 @@ public class GameMaster {
 	private static void oneRound(PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2, int gameSeed){
 		Node[] graph = Parser.parseGraph(gameSeed+".graph").getNodes();
 		Graph g = Parser.parseGraph(gameSeed+".graph");
+		g.setParameters(param);
 		initializePlayers(g, p1Profile, p1, p2Profile, p2,gameSeed);
 		boolean p1Finished;
 		boolean p2Finished;
 		//Runs until both players have a full hand or are out of turns
-		for(int i = 0; i < Parameters.NUM_TURNS; i++){
+		for(int i = 0; i < 1000; i++){
 			//Checks if player 1 is finished, if not, has him/her make one move, then registers the turn the gamemaster and both players
-			if(p1Profile.getHandSize() < Parameters.MAX_HAND){
+			if(p1Profile.getHandSize() < 5){
 				//oneTurn(p1);
 				tryPlayer(new PlayerDriver(PlayerState.MAKE_ACTION, p1)); //Try to have player 1 make an action
 				registerTurn(graph, p1Profile, p1, p2);
@@ -249,7 +251,7 @@ public class GameMaster {
 				p1Finished = true;
 
 			//Checks if player 2 is finished, if not, has him/her make one move, then registers the turn the gamemaster and both players
-			if(p2Profile.getHandSize() < Parameters.MAX_HAND){
+			if(p2Profile.getHandSize() < 5){
 				//oneTurn(p2);
 				tryPlayer(new PlayerDriver(PlayerState.MAKE_ACTION, p2)); //Try to have player 1 make an action
 				registerTurn(graph, p2Profile, p2, p1);
@@ -327,14 +329,14 @@ public class GameMaster {
 
 	private static void evaluateHands(Hand hand1, Hand hand2, float[]ranks, double[]wins,int p1, int p2, ArrayList<Player> players){
 		HandEvaluator hEval = new HandEvaluator();
-		if (hand1.size() != Parameters.MAX_HAND && hand2.size() != Parameters.MAX_HAND) {
+		if (hand1.size() != 5 && hand2.size() != 5) {
 			if(verbose)System.out.println("No player was able to get a full hand.");
 		}
-		else if (hand1.size() != Parameters.MAX_HAND) {//p2 made it to 5 but p1 didn't
+		else if (hand1.size() != 5) {//p2 made it to 5 but p1 didn't
 			wins[p2]++;
 			ranks[p2] += hEval.rankHand(hand2);
 			if(verbose)System.out.println(players.get(p2).getName()+" wins by default with "+HandEvaluator.nameHand(hEval.rankHand(hand2)));
-		} else if (hand2.size() != Parameters.MAX_HAND) {//p1 made it to 5 but p2 didn't
+		} else if (hand2.size() != 5) {//p1 made it to 5 but p2 didn't
 			wins[p1]++;
 			ranks[p1] += hEval.rankHand(hand2);
 			if(verbose)System.out.println(players.get(p1).getName()+" wins by default with "+HandEvaluator.nameHand(hEval.rankHand(hand1)));
@@ -369,13 +371,16 @@ public class GameMaster {
 	 * @param numGraphs
 	 *            the number of graphs to generate
 	 */
-	public static void generateGraphs(int numGraphs) {
+	public static Graph[] generateGraphs(int numGraphs) {
+		Graph[] graphs = new Graph[numGraphs];
 		for (int i = 0; i < numGraphs; i++) {
-			Graph n = new Graph(i);
+			Graph n = new Graph(i,param);
 			n.generateGraph();
 			n.saveGraph();
+			graphs[i] = n;
 			n.saveGraph(true);
 		}
+		return graphs;
 	}
 
 
@@ -383,52 +388,52 @@ public class GameMaster {
 	 * Sets new parameters based on a case x
 	 * @param x the case to use
 	 */
-	private static void changeParameters(int x){
+	private static void changeParameters(int x, Parameters p){
 		switch (x) {
-		case 0://smallish graph
-			Parameters.NUMBER_OF_NODES = 8;
-			Parameters.MAX_NEIGHBORS = 3;
-			Parameters.MIN_NEIGHBORS = 1;
-			Parameters.NUM_POSSIBLE_CARDS = 4;
-			Parameters.NUM_TURNS = 8;
-			break;
-		case 1://slightly larger
-			Parameters.NUMBER_OF_NODES = 12;
-			Parameters.MAX_NEIGHBORS = 3;
-			Parameters.MIN_NEIGHBORS = 2;
-			Parameters.NUM_POSSIBLE_CARDS = 4;
-			Parameters.NUM_TURNS = 12;
-			break;
-		case 2: //less uncertainty
-			Parameters.NUMBER_OF_NODES = 14;
-			Parameters.MAX_NEIGHBORS = 5;
-			Parameters.MIN_NEIGHBORS = 2;
-			Parameters.NUM_POSSIBLE_CARDS = 2;
-			Parameters.NUM_TURNS = 8;
-			break;
-		case 3://no uncertainty
-			Parameters.NUMBER_OF_NODES = 12;
-			Parameters.MAX_NEIGHBORS = 5;
-			Parameters.MIN_NEIGHBORS = 2;
-			Parameters.NUM_POSSIBLE_CARDS = 1;
-			Parameters.NUM_TURNS = 8;
-			break;
-		case 4://large and complex
-			Parameters.NUMBER_OF_NODES = 20;
-			Parameters.MAX_NEIGHBORS = 5;
-			Parameters.MIN_NEIGHBORS = 3;
-			Parameters.NUM_POSSIBLE_CARDS = 4;
-			Parameters.NUM_TURNS = 15;
-			break;
-		case 5://even more complexity
-			Parameters.NUMBER_OF_NODES = 20;
-			Parameters.MAX_NEIGHBORS = 5;
-			Parameters.MIN_NEIGHBORS = 3;
-			Parameters.NUM_POSSIBLE_CARDS = 5;
-			Parameters.NUM_TURNS = 15;
-			break;
-		default://whatever the default parameters are
-			break;
+			case 0://smallish graph
+				p.NUMBER_OF_NODES = 8;
+				p.MAX_NEIGHBORS = 3;
+				p.MIN_NEIGHBORS = 1;
+				p.NUM_POSSIBLE_CARDS = 4;
+				p.BUDGET = 50;
+				break;
+			case 1://slightly larger
+				p.NUMBER_OF_NODES = 12;
+				p.MAX_NEIGHBORS = 3;
+				p.MIN_NEIGHBORS = 2;
+				p.NUM_POSSIBLE_CARDS = 4;
+				p.BUDGET = 80;
+				break;
+			case 2: //less uncertainty
+				p.NUMBER_OF_NODES = 14;
+				p.MAX_NEIGHBORS = 5;
+				p.MIN_NEIGHBORS = 2;
+				p.NUM_POSSIBLE_CARDS = 2;
+				p.BUDGET = 100;
+				break;
+			case 3://no uncertainty
+				p.NUMBER_OF_NODES = 12;
+				p.MAX_NEIGHBORS = 5;
+				p.MIN_NEIGHBORS = 2;
+				p.NUM_POSSIBLE_CARDS = 1;
+				p.BUDGET = 200;
+				break;
+			case 4://large and complex
+				p.NUMBER_OF_NODES = 20;
+				p.MAX_NEIGHBORS = 5;
+				p.MIN_NEIGHBORS = 3;
+				p.NUM_POSSIBLE_CARDS = 4;
+				p.BUDGET = 100;
+				break;
+			case 5://even more complexity
+				p.NUMBER_OF_NODES = 20;
+				p.MAX_NEIGHBORS = 5;
+				p.MIN_NEIGHBORS = 3;
+				p.NUM_POSSIBLE_CARDS = 5;
+				p.BUDGET = 100;
+				break;
+			default://whatever the default p are
+				break;
 		}
 	}
 }

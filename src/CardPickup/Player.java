@@ -17,7 +17,8 @@ public abstract class Player
     
     protected Node[] graph;
     protected Hand hand;
-    protected int turnsRemaining;
+    //protected int turnsRemaining;
+    protected int budget;
     protected int currentNode;
     protected int oppNode; /**Opponent's current position*/
     protected Card oppLastCard;	/**Opponent's last picked up card*/
@@ -27,7 +28,7 @@ public abstract class Player
      */
     public Player()
     {
-        turnsRemaining = Parameters.NUM_TURNS;
+        //turnsRemaining = Parameters.NUM_TURNS;
     }
 
     /**

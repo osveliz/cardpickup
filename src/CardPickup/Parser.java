@@ -40,41 +40,35 @@ public class Parser
             int neighborsCounter = 0;
             int numNodes = parseRecords.getRecords().size()/2;
             //Graph graph = new Graph(0,numNodes);
-            Graph graph = new Graph(-1);
+            Graph graph = new Graph(-1, new Parameters());
             graph.setName(filename.substring(0,filename.indexOf(".")));
             boolean flag = false;
-            for (CSVRecord csvRecord : parser)
-            {
+            for (CSVRecord csvRecord : parser){
                 Iterator<String> itr = csvRecord.iterator();
-                if((neighborsCounter<numNodes) && flag==false)
-                {
+                if((neighborsCounter<numNodes) && flag==false){
                     Node node = graph.getNode(neighborsCounter);
-                    while(itr.hasNext())
-                    {
+                    while(itr.hasNext()){
                         int x = Integer.parseInt(itr.next());
                         if(x >= 0){
                             Node neighbor = graph.getNode(x);
                             node.addNeighbor(neighbor);
                         }
                     }
-                    if(neighborsCounter==numNodes-1)
-                    {
+                    if(neighborsCounter==numNodes-1){
                         flag = true;
                         neighborsCounter=0;
                     }
                     else
                         neighborsCounter++;
                 }
-                else if(flag && (neighborsCounter<numNodes))
-                {
+                else if(flag && (neighborsCounter<numNodes)){
                     Node node = graph.getNode(neighborsCounter);
-                    {
-                        if(usePossibleCardSet)
-                            for(int i = 0; i < Parameters.NUM_POSSIBLE_CARDS; i++)
-                                node.addPossible(new Card(itr.next()));
-                        else
+                    if(usePossibleCardSet)
+                         //for(int i = 0; i < Parameters.NUM_POSSIBLE_CARDS; i++)
+                         while (itr.hasNext())
+                             node.addPossible(new Card(itr.next()));
+                    else
                             node.setCard(new Card(itr.next()));
-                    }
                     neighborsCounter++;
                 }
             }
