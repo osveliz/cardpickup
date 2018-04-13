@@ -62,8 +62,9 @@ public class Graph {
 	public void setMatrix(int[][] matrix, Node[] ns){
 		adjacencyMatrix = new int[matrix.length][matrix.length];
 		for(int i = 0; i < matrix.length; i++)
-			for(int j = 0; j < matrix.length; j++)
+			for(int j = 0; j < matrix[i].length; j++)
 				adjacencyMatrix[i][j] = matrix[i][j];
+		//printMatrix();
 		nodes = new Node[matrix.length];
 		for(int n = 0; n < nodes.length; n++){
 			nodes[n] = new Node(n);
@@ -91,6 +92,15 @@ public class Graph {
 	public void setParameters(Parameters param){
 		p = param;
 	}
+	
+	/**
+	 * Get initial budget from parameters
+	 * @return the initial budget
+	 */
+	public int getInitalBudget(){
+		return p.BUDGET;
+	}
+	
 	/**
 	 * 1 for player 1
 	 * 2 for player 2
@@ -453,7 +463,8 @@ public class Graph {
      * @return the weights
      */
     public int[][] getWeights(){
-		return weights;
+		//return weights;
+		return adjacencyMatrix;
 	}
 	
 	/**
@@ -495,6 +506,51 @@ public class Graph {
 				for(int c = 0; c < newHands[p].getNumHole(); c++)
 					hands[p].addHoleCard(new Card((newHands[p].getHoleCard(c)).toString()));
 			}
+		}
+	}
+	
+	/**
+	 * Update all of the weights in the adjacency matrix
+	 */
+	public void computeWeights(){
+		Random r = new Random(name);
+		int max = p.MAX_WEIGHT;
+		int n = p.NUMBER_OF_NODES;
+		//reset the matrix
+		for(int i = 0; i < n; i++)
+			for(int j = 0; j < n; j++)
+				adjacencyMatrix[i][j] = -1;
+		//reconnect the matrix
+		for(int i = 0; i < n; i++){
+			Node x = nodes[i];
+			int id = x.getNodeID();
+			ArrayList<Node> neigh = x.getNeighborList();
+			for(int j = 0; j < neigh.size(); j++){
+				int xid = neigh.get(j).getNodeID();
+				adjacencyMatrix[id][xid] = 1;
+			}
+		}
+		
+		for(int i = 0; i < n; i++){
+			for(int j = 0; j < n; j++){
+				if(adjacencyMatrix[i][j] <= 0)
+					adjacencyMatrix[i][j] = -1;//cannot connect
+				else if(i <= j)
+					adjacencyMatrix[i][j] = r.nextInt(max)+1;
+				else
+					adjacencyMatrix[i][j] = adjacencyMatrix[j][i];
+			}
+		}
+	}
+	
+	/**
+	 * prints the adjacency matrix
+	 */
+	public void printMatrix(){
+		for(int i = 0; i < adjacencyMatrix.length; i++){
+			for(int j = 0; j < adjacencyMatrix[i].length; j++)
+				System.out.print(adjacencyMatrix[i][j]+"\t");
+			System.out.println();
 		}
 	}
 	

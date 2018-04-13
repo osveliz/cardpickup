@@ -9,6 +9,7 @@ public class PlayerProfile {
 	private String name;
 	private Hand currentHand;
 	private int currentLocation;
+	private int budget;
 
     /**
      * Constructor
@@ -89,4 +90,29 @@ public class PlayerProfile {
 	public int getHandSize(){
 		return currentHand.getNumHole();
 	}
+	
+	/**
+	 * Set budget
+	 * @param b
+	 */
+	public void setBudget(int b){
+		budget = b;
+	}
+	
+	/**
+	 * Get the budget
+	 * @return the budget
+	 */
+	public int getBudget(){
+		return budget;
+	}
+	
+	/**
+	 * Subtract from budget
+	 * @param b
+	 */
+	public void pay(int b){
+		budget -= b;
+	}
+	
 }

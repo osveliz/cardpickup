@@ -6,7 +6,6 @@ package CardPickup;
  */
 public enum ActionType {
 
-	PICKUP,
-	MOVE;
+	PICKUP, MOVE, END;
 	
 }

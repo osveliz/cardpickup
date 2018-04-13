@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class GameMaster {
 
 	private static boolean verbose = true; //Set to false if you do not want much detail printed to console
-	private static int numGames = 5; //use a small number for quick tests, a large one to be comprehensive
+	private static int numGames = 1; //use a small number for quick tests, a large one to be comprehensive
 	private static int parameterSetting = 1; //see changeParameters()
 	private static Parameters param;
 	private static Graph currentGame;
@@ -50,6 +50,7 @@ public class GameMaster {
 		
 		ArrayList<Player> players = new ArrayList<Player>();
 		players.add(new TestPlayer());
+		//players.add(new TestPlayer());
 		players.add(new MaxPower());
 		players.add(new HankScorpio());
 		////////////////////////////////////
@@ -130,6 +131,8 @@ public class GameMaster {
 		p1Profile.setCurrentLocation(0);
 		p1.setHand(g.getHand(1));
 		p1.setCurrentNode(p1Profile.getCurrentLocation());
+		p1Profile.setBudget(g.getInitalBudget());
+		p1.setBudget(p1Profile.getBudget());
 
 		//Player 2
 		hidden2.hide();
@@ -138,6 +141,8 @@ public class GameMaster {
 		p2Profile.setCurrentLocation(1);
 		p2.setHand(g.getHand(2));
 		p2.setCurrentNode(p2Profile.getCurrentLocation());
+		p2Profile.setBudget(g.getInitalBudget());
+		p2.setBudget(p1Profile.getBudget());
 
 		//Notify players of their opponent
 		p1.setOpponentNode(p2Profile.getCurrentLocation());	//subject to change
@@ -156,13 +161,48 @@ public class GameMaster {
 	 * @param opponent opposing player
 	 */
 	private static void registerTurn(PlayerProfile cpProfile, Player currentPlayer, Player opponent){
+		//currentGame.printMatrix();
 		Node[] graph = currentGame.getNodes();
 		Action a = currentPlayer.getLastAction();
+
         if(a == null)//just in case the player couldn't get a move in.
             a = new Action(ActionType.MOVE,currentPlayer.getCurrentNode());
-		if(isValidMove(cpProfile.getCurrentLocation(), a.nodeID)){
+        if(a.move == ActionType.END){
+			if(verbose)System.out.println(currentPlayer.getName() + " Ended");
+			cpProfile.setBudget(-1);
+			currentPlayer.setBudget(-1);
+			return;
+		}
+        int di1,di2;
+		if(isValidMove(cpProfile.getCurrentLocation(), a.nodeID) && cpProfile.getBudget()>0){
 			switch(a.move){
+			case END:
+				if(verbose)System.out.println(currentPlayer.getName() + " Ended");
+				cpProfile.setBudget(-1);
+				currentPlayer.setBudget(-1);
+				break;
 			case MOVE:
+				di1 = cpProfile.getCurrentLocation();
+				di2 = a.nodeID;
+				if(di1 != di2){
+					int[][] matrix = currentGame.getWeights();
+					int cost = matrix[di1][di2];
+					if(verbose)System.out.println("Cost from "+di1+" to "+di2+": "+cost);
+					//currentGame.printMatrix();
+					if(cpProfile.getBudget()<cost){
+						cpProfile.setBudget(-1);
+						currentPlayer.setBudget(cpProfile.getBudget());
+						break;
+					}
+					else{
+						cpProfile.pay(cost);
+						currentPlayer.setBudget(cpProfile.getBudget());
+					}
+				}
+				else{//why move to same node?
+					cpProfile.pay(5);
+					currentPlayer.setBudget(cpProfile.getBudget());
+				}
 				cpProfile.setCurrentLocation(a.nodeID);
 				currentPlayer.setCurrentNode(a.nodeID);
 				tryPlayer(new PlayerDriver(PlayerState.OPP_RESULT, opponent, a.nodeID, false, null)); //Try to notify opponent of result
@@ -170,33 +210,58 @@ public class GameMaster {
 				if(verbose)System.out.println(currentPlayer.getName() + " moved to node " + a.nodeID);
 				break;
 			case PICKUP:
+				di1 = cpProfile.getCurrentLocation();
+				di2 = a.nodeID;
+				if(di1 != di2){
+					int[][] matrix = currentGame.getWeights();
+					int cost = matrix[di1][di2];
+					if(verbose)System.out.println("Cost from "+di1+" to "+di2+": "+cost);
+					if(cpProfile.getBudget()<cost){
+						cpProfile.setBudget(-1);
+						currentPlayer.setBudget(cpProfile.getBudget());
+						break;
+					}
+					else{
+						cpProfile.pay(cost);
+						currentPlayer.setBudget(cpProfile.getBudget());
+					}
+				}
 				cpProfile.setCurrentLocation(a.nodeID);
 				currentPlayer.setCurrentNode(a.nodeID);
 				//If the node's card has not been picked up yet
 				if(graph[a.nodeID].getPossibleCards().size() > 0){
 					Card c = new Card(graph[a.nodeID].getCard().toString());
 					cpProfile.addCardToHand(c);
+					currentPlayer.addCardToHand(new Card(c.toString()));
 					tryPlayer(new PlayerDriver(PlayerState.OPP_RESULT, opponent, a.nodeID, true, c)); //Try to notify opponent of result
 					tryPlayer(new PlayerDriver(PlayerState.RESULT, currentPlayer, a.nodeID, c)); //Try to notify player of result
-					graph[a.nodeID].clearPossibleCards(); //remove all possible cards
+					//graph[a.nodeID].clearPossibleCards(); //remove all possible cards
+					currentPlayer.getNode().clearPossibleCards();
+					opponent.getNode(currentPlayer.getCurrentNode()).clearPossibleCards();
 					currentGame.getNode(a.nodeID).clearPossibleCards();
 					if(verbose)System.out.println(currentPlayer.getName() + " picked up a " + graph[a.nodeID].getCard().toString() + " at node " + a.nodeID);
 				}else{ //The node's card has already been picked up
 					tryPlayer(new PlayerDriver(PlayerState.OPP_RESULT, opponent, a.nodeID, false, null)); //Try to notify opponent of result
 					tryPlayer(new PlayerDriver(PlayerState.RESULT, currentPlayer, a.nodeID, null)); //Try to notify player of result
 					if(verbose)System.out.println(currentPlayer.getName() + " attempted to pick up a card at node " + a.nodeID + ", but nothing was there");
+					cpProfile.pay(5);//invalid cost
+					currentPlayer.setBudget(cpProfile.getBudget());
 				}
 				break;
 			default:
 				tryPlayer(new PlayerDriver(PlayerState.OPP_RESULT, opponent, a.nodeID, false, null)); //Try to notify opponent of result
 				tryPlayer(new PlayerDriver(PlayerState.RESULT, currentPlayer, cpProfile.getCurrentLocation(), null)); //Try to notify player of result
 				if(verbose)System.out.println(currentPlayer.getName() + " performed an invalid action default case hit");
+				cpProfile.pay(5);//invalid cost
+				currentPlayer.setBudget(cpProfile.getBudget());
 				break;
 			}
 		}else{
 			tryPlayer(new PlayerDriver(PlayerState.OPP_RESULT, opponent, a.nodeID, false, null)); //Try to notify opponent of result
 			tryPlayer(new PlayerDriver(PlayerState.RESULT, currentPlayer, cpProfile.getCurrentLocation(), null)); //Try to notify player of result
 			if(verbose)System.out.println(currentPlayer.getName() + " performed an invalid action");
+			cpProfile.pay(5);//invalid cost
+				currentPlayer.setBudget(cpProfile.getBudget());
 		}
 	}
 
@@ -240,7 +305,8 @@ public class GameMaster {
 		int i = 0;
 		while(!p1Finished && !p2Finished){
 			//Checks if player 1 is finished, if not, has him/her make one move, then registers the turn the gamemaster and both players
-			if(p1Profile.getHandSize() < 5){
+			//if(p1Profile.getHandSize() < 5){
+			if(p1Profile.getBudget()>0){
 				tryPlayer(new PlayerDriver(PlayerState.MAKE_ACTION, p1)); //Try to have player 1 make an action
 				registerTurn(p1Profile, p1, p2);
 			}
@@ -248,7 +314,8 @@ public class GameMaster {
 				p1Finished = true;
 
 			//Checks if player 2 is finished, if not, has him/her make one move, then registers the turn the gamemaster and both players
-			if(p2Profile.getHandSize() < 5){
+			//if(p2Profile.getHandSize() < 5){
+			if(p2Profile.getBudget()>0){
 				tryPlayer(new PlayerDriver(PlayerState.MAKE_ACTION, p2)); //Try to have player 1 make an action
 				registerTurn(p2Profile, p2, p1);
 				//p2Finished = false;
@@ -256,6 +323,8 @@ public class GameMaster {
 			else
 				p2Finished = true;
 
+			if(verbose)System.out.println("Player 1's Budget: " + p1Profile.getBudget());
+			if(verbose)System.out.println("Player 2's Budget: " + p2Profile.getBudget());
 			if(verbose)System.out.println("Player 1's Hand: " + p1Profile.getCurrentHand());
 			if(verbose)System.out.println("Player 2's Hand: " + p2Profile.getCurrentHand());
 			if(verbose)System.out.println("Round " + (i++) + " finished");
@@ -369,6 +438,8 @@ public class GameMaster {
 			n.generateGraph();
 			n.saveGraph();
 			graphs[i] = n;
+			n.computeWeights();
+			//n.printMatrix();
 			n.saveGraph(true);
 		}
 		return graphs;

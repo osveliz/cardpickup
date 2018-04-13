@@ -15,7 +15,7 @@ public class Parameters {
     /**Identifies the budget (both players)*/
     public int BUDGET = 70;
     /**Identifies the maximum weight of an edge*/
-    public int MAX_WEIGTH = 10;
+    public int MAX_WEIGHT = 10;
     /**Time limit for initialization in milliseconds*/
     public int INIT_TIME = 1000;
     /**Time limit for calculating an action result in milliseconds*/
@@ -49,7 +49,7 @@ public class Parameters {
 		MIN_NEIGHBORS = min;
 		NUM_POSSIBLE_CARDS = cards;
 		BUDGET = bud;
-		MAX_WEIGTH = weight;
+		MAX_WEIGHT = weight;
 		INIT_TIME = init;
 		RESULT_TIME = result;
 		OPP_RESULT_TIME = opp;
@@ -65,7 +65,7 @@ public class Parameters {
 								MIN_NEIGHBORS,
 								NUM_POSSIBLE_CARDS,
 								BUDGET,
-								MAX_WEIGTH,
+								MAX_WEIGHT,
 								INIT_TIME,
 								RESULT_TIME,
 								OPP_RESULT_TIME,

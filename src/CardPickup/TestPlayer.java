@@ -74,13 +74,16 @@ public class TestPlayer extends Player{
      * Player logic goes here
      */
 	public Action makeAction() {
+		/*if(hand.size()==5)
+			return new Action();//end
 		Random r = new Random();
         int neighbor;
         if (nodes[currentNode].getNeighborAmount()==1)
             neighbor = nodes[currentNode].getNeighbor(0).getNodeID();
         else
 		    neighbor = nodes[currentNode].getNeighbor(r.nextInt(nodes[currentNode].getNeighborAmount())).getNodeID();
-		return new Action(ActionType.PICKUP, neighbor);
+		return new Action(ActionType.PICKUP, neighbor);*/
+		return new Action(ActionType.END, -1);
 	}
 
 }

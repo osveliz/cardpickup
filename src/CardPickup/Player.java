@@ -42,6 +42,23 @@ public abstract class Player
     }
     
     /**
+     * Game Master will update your graph
+     * @return the current node
+     */
+    public Node getNode(){
+		return graph.getNode(currentNode);
+	}
+	
+	/**
+	 * Game Master will update your graph
+	 * @param n node id
+	 * @return the node with id n
+	 */
+	public Node getNode(int n){
+		return graph.getNode(n);
+	}
+    
+    /**
      * Sets the opponent's current location
      * @param newNode location of opponent
      */
@@ -68,13 +85,19 @@ public abstract class Player
      * Imports a new graph
      * @param g graph
      */
-    /*public void setGraph(Node[] g){
-    	graph = g;
-    }*/
     public void setGraph(Graph g){
 		graph = g;
 		nodes = g.getNodes();
 	}
+	
+	/**
+	 * Set the player's budget called by GameMaster
+	 * @param b budget
+	 */
+	public void setBudget(int b){
+		budget = b;
+	}
+	
     
     /**
      * THIS METHOD SHOULD BE OVERRIDDEN if you wish to make computations off of the opponent's moves. 
@@ -141,6 +164,9 @@ public abstract class Player
         Action a = makeAction();
         if(a != null){
             switch(a.move){
+			case END:
+				lastAction = a;
+				break;
             case MOVE:
             	if(isValidAction(a)){
             		move(a.nodeID);

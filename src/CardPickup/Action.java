@@ -9,6 +9,14 @@ public class Action {
 
 	public ActionType move;
 	public int nodeID;
+	
+	/**
+	 * End Action
+	 */
+	public Action(){
+		move = ActionType.END;
+		nodeID = -1;
+	}
 
     /**
      *
