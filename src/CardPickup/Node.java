@@ -136,18 +136,26 @@ public class Node
      * Stores card c as the true card. Adds c to the set of possible cards.
      * @param c card to set
      */
-    public void setCard(Card c)
-    {
+    public void setCard(Card c){
         trueCard = c;
         addPossible(c);
     }
+    
+    public void setTrueCard(Card c){
+		trueCard = c;
+	}
 
     /**
      * Returns the true card. Not useful if you're not supposed to know what the card is.
      * @return the true card if you're in the know
      */
     public Card getCard(){
-        return new Card(trueCard.toString());
+		if (trueCard!=null)
+			return new Card(trueCard.toString());
+		else{
+			System.out.println("null true");
+			return new Card();
+		}
     }
 
     /**
@@ -207,5 +215,12 @@ public class Node
             possibleCards.add(possibleCards.remove(index));
         }
     }
+    
+    /**
+     * Removes true card
+     */
+    public void clearCard(){
+		trueCard = null;
+	}
 
 }

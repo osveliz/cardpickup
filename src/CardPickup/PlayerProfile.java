@@ -17,6 +17,7 @@ public class PlayerProfile {
 
 	PlayerProfile(String agentName){
 		this.name = agentName;
+		currentHand = new Hand();
 	}
 
     /**
@@ -56,6 +57,12 @@ public class PlayerProfile {
      * @param card card to be added
      */
 	public void addCardToHand(Card card){
+		int numCards = currentHand.getNumHole();
+		for(int i = 0; i<numCards; i++){
+			Card current = currentHand.getHoleCard(i);
+			if(card.getSuit() == current.getSuit() && card.getRank() == current.getRank())
+				return;
+		}
         currentHand.addHoleCard(card);
     }
 

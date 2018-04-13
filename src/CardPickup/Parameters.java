@@ -24,4 +24,30 @@ public class Parameters {
     public int OPP_RESULT_TIME = 1000;
     /**Time limit for making an action in milliseconds*/
     public int ACTION_TIME = 500;
+    
+    public Parameters(){}
+    public Parameters(int nodes, int max, int min, int cards, int bud, int weight, int init, int result, int opp, int action){
+		NUMBER_OF_NODES = nodes;
+		MAX_NEIGHBORS = max;
+		MIN_NEIGHBORS = min;
+		NUM_POSSIBLE_CARDS = cards;
+		BUDGET = bud;
+		MAX_WEIGTH = weight;
+		INIT_TIME = init;
+		RESULT_TIME = result;
+		OPP_RESULT_TIME = opp;
+		ACTION_TIME = action;
+	}
+	public Parameters clone(){
+		return new Parameters(NUMBER_OF_NODES,
+								MAX_NEIGHBORS,
+								MIN_NEIGHBORS,
+								NUM_POSSIBLE_CARDS,
+								BUDGET,
+								MAX_WEIGTH,
+								INIT_TIME,
+								RESULT_TIME,
+								OPP_RESULT_TIME,
+								ACTION_TIME);
+	}
 }

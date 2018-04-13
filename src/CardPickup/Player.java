@@ -15,7 +15,8 @@ public abstract class Player
     protected String playerName = "defaultPlayer"; //Overwrite this variable in your player subclass
     private Action lastAction;
     
-    protected Node[] graph;
+    protected Node[] nodes;
+    protected Graph graph;
     protected Hand hand;
     //protected int turnsRemaining;
     protected int budget;
@@ -67,9 +68,13 @@ public abstract class Player
      * Imports a new graph
      * @param g graph
      */
-    public void setGraph(Node[] g){
+    /*public void setGraph(Node[] g){
     	graph = g;
-    }
+    }*/
+    public void setGraph(Graph g){
+		graph = g;
+		nodes = g.getNodes();
+	}
     
     /**
      * THIS METHOD SHOULD BE OVERRIDDEN if you wish to make computations off of the opponent's moves. 
@@ -107,6 +112,12 @@ public abstract class Player
      * @param card Name of card to add - ex "Six of Hearts"
      */
     public void addCardToHand(Card card){
+		int numCards = hand.getNumHole();
+		for(int i = 0; i<numCards; i++){
+			Card current = hand.getHoleCard(i);
+			if(card.getSuit() == current.getSuit() && card.getRank() == current.getRank())
+				return;
+		}
         hand.addHoleCard(card);
     }
     
@@ -199,8 +210,8 @@ public abstract class Player
     protected boolean isValidAction(Action a){
 		if(currentNode == a.nodeID)
 			return true;
-		for(int i = 0; i < graph[currentNode].getNeighborAmount(); i++){
-			if(graph[currentNode].getNeighbor(i).getNodeID() == a.nodeID)
+		for(int i = 0; i < nodes[currentNode].getNeighborAmount(); i++){
+			if(nodes[currentNode].getNeighbor(i).getNodeID() == a.nodeID)
 				return true;
 		}
 		return false;

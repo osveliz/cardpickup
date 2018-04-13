@@ -70,16 +70,16 @@ public class MaxPower extends Player{
         if(c!=null) {
             addCardToHand(c);
         }
-        graph[currentNode].clearPossibleCards();
+        nodes[currentNode].clearPossibleCards();
     }
 
     /**
      * Player logic goes here
      */
 	public Action makeAction() {
-		int[] sums = new int[graph[currentNode].getNeighborAmount()];
+		int[] sums = new int[nodes[currentNode].getNeighborAmount()];
         for(int i = 0; i < sums.length; i++){
-            ArrayList<Card> possible = graph[currentNode].getNeighbor(i).getPossibleCards();
+            ArrayList<Card> possible = nodes[currentNode].getNeighbor(i).getPossibleCards();
             if(possible != null){
                 for(int j = 0; j < possible.size(); j++)
                     sums[i] += possible.get(j).getRank();
@@ -89,7 +89,7 @@ public class MaxPower extends Player{
         for(int k = 1; k < sums.length; k++)
             if(sums[maxIndex] < sums[k])
                 maxIndex = k;
-        int neighbor = graph[currentNode].getNeighbor(maxIndex).getNodeID();
+        int neighbor = nodes[currentNode].getNeighbor(maxIndex).getNodeID();
 		return new Action(ActionType.PICKUP, neighbor);
 	}
 

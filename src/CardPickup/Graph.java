@@ -19,6 +19,14 @@ public class Graph {
 	private Node[] nodes;
 	private Hand[] hands;
 	private int[][] weights;
+	private int[][] adjacencyMatrix;
+	
+	/**
+	 * empty constructor
+	 */
+	public Graph(){
+		
+	}
 
 	/**
 	 * Constructor used by Game master to initialize graph.
@@ -34,6 +42,7 @@ public class Graph {
 			nodes[i] = new Node();
 			nodes[i].setNodeID(i);
 		}
+		adjacencyMatrix = new int[p.NUMBER_OF_NODES][p.NUMBER_OF_NODES];
 	}
 
 	/**
@@ -43,6 +52,27 @@ public class Graph {
 	public int getName() {
 		return name;
 	}
+	
+	/**
+	 * set the adjacency matrix
+	 * @param matrix the matrix to copy
+	 */
+	public void setMatrix(int[][] matrix, Node[] ns){
+		adjacencyMatrix = new int[matrix.length][matrix.length];
+		for(int i = 0; i < matrix.length; i++)
+			for(int j = 0; j < matrix.length; j++)
+				adjacencyMatrix[i][j] = matrix[i][j];
+		nodes = new Node[matrix.length];
+		for(int n = 0; n < nodes.length; n++){
+			nodes[n] = new Node(n);
+			nodes[n].setTrueCard(new Card(ns[n].getCard().toString()));
+		}
+		for(int n = 0; n < nodes.length; n++)
+			for(int k = 0; k < matrix.length; k++)
+				if(matrix[n][k] != 0)
+					nodes[n].addNeighbor(nodes[k]);
+	}
+	
 
 	/**
 	 * Sets full graph name.
@@ -58,6 +88,15 @@ public class Graph {
 	 */
 	public void setParameters(Parameters param){
 		p = param;
+	}
+	/**
+	 * 1 for player 1
+	 * 2 for player 2
+	 * @param player
+	 * @return player's hand
+	 */
+	public Hand getHand(int player){
+		return hands[player-1];
 	}
 
 	/**
@@ -90,7 +129,7 @@ public class Graph {
 	 * @param adjacencyMatrix A two dimensional array for adjacency
 	 * @return boolean True/False validating a node to be eligible for Neighbor or not
 	 */
-	public boolean isAllowedToBeNeighbor(int currentIndex, int neighborIndex, int [][] adjacencyMatrix){
+	public boolean isAllowedToBeNeighbor(int currentIndex, int neighborIndex){
 		if (currentIndex == neighborIndex)
 			return false;
 		int neighborCount = 0;
@@ -126,6 +165,18 @@ public class Graph {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * print both hands
+	 */
+	public void printHands(){
+		Card p1c1 = hands[0].getHoleCard(0);
+		Card p1c2 = hands[0].getHoleCard(1);
+		Card p2c1 = hands[1].getHoleCard(0);
+		Card p2c2 = hands[1].getHoleCard(1);
+		printHand(1,p1c1,p1c2);//saves hand to files
+		printHand(2,p2c1,p2c2);
 	}
 
 	/**
@@ -211,7 +262,7 @@ public class Graph {
 	 */
 	public void generateGraph(){
 		Random r = new Random(name);
-		int [][] adjacencyMatrix = new int[p.NUMBER_OF_NODES][p.NUMBER_OF_NODES];
+		//int [][] adjacencyMatrix = new int[p.NUMBER_OF_NODES][p.NUMBER_OF_NODES];
 		for(int i =0; i<nodes.length; i++)
 			Arrays.fill(adjacencyMatrix[i], 0);
 		ArrayList<Integer> completedNodes = new ArrayList<Integer>();
@@ -233,7 +284,7 @@ public class Graph {
 				if(rejectedNeighbors.size()>0)
 					if(rejectedNeighbors.size()==(nodes.length-tmpNeighbors.size()-1))
 						break;
-				if (isAllowedToBeNeighbor(currentIndex, nodeIndex, adjacencyMatrix)){
+				if (isAllowedToBeNeighbor(currentIndex, nodeIndex)){
 					if((tmpNeighbors.size()>0 && !tmpNeighbors.contains(nodeIndex) && tmpNeighbors.size() < p.MAX_NEIGHBORS) || tmpNeighbors.size()==0){
 						adjacencyMatrix[currentIndex][nodeIndex] = 1;
 						adjacencyMatrix[nodeIndex][currentIndex] = 1;
@@ -369,6 +420,21 @@ public class Graph {
         }
         return playerGraph;
 	}
+	
+	public void hide(){
+		Random r = new Random();
+		for(int i = 0; i < nodes.length; i++){
+			nodes[i].clearCard();
+			ArrayList<Card> possible = nodes[i].getPossibleCards();
+			if(possible.size()>0)
+				for(int j = 0; j < 17; j++){//17 shuffles
+					Card c = possible.remove(0);
+					possible.add(r.nextInt(possible.size()),c);
+				}
+			
+		}
+		
+	}
 
     /**
      * Returns the nodes
@@ -384,5 +450,62 @@ public class Graph {
      */
     public int[][] getWeights(){
 		return weights;
+	}
+	
+	/**
+	 * copies all of the card data from a list of nodes
+	 * @param newNodes the new nodes
+	 */
+	public void setCards(Node[] newNodes){
+		if(newNodes == null){
+			System.out.println("error");
+			return;
+		}
+			
+		for(int n = 0; n < nodes.length; n++){
+			if(newNodes[n] == null){
+				System.out.println("danger");
+				return;
+			}
+			if(newNodes[n].getCard()==null)
+				return;
+			nodes[n].setTrueCard(new Card(newNodes[n].getCard().toString()));
+			ArrayList<Card> cards = newNodes[n].getPossibleCards();
+			for(int k = 0; k < cards.size(); k++)
+				nodes[n].addPossible(new Card(cards.get(k).toString()));
+		}
+	}
+	/**
+	 * copy hands
+	 * @param newHands the new hands
+	 */
+	public void setHands(Hand[] newHands){
+		hands = new Hand[2];
+		hands[0] = new Hand();
+		hands[1] = new Hand();
+		if (newHands == null||newHands[0] == null || newHands[1] == null){
+				return;
+		}
+		else{	
+			for(int p = 0; p < newHands.length; p++){
+				for(int c = 0; c < newHands[p].getNumHole(); c++)
+					hands[p].addHoleCard(new Card((newHands[p].getHoleCard(c)).toString()));
+			}
+		}
+	}
+	
+	/**
+	 * cloner
+	 * @return clone of graph
+	 */
+	public Graph clone(){
+		Graph copy = new Graph(name, p);
+		copy.generateGraph();
+		copy.setParameters(p.clone());
+		copy.setName(this.fullGraphName+"");
+		copy.setMatrix(this.adjacencyMatrix, this.nodes);
+		copy.setCards(this.nodes);
+		copy.setHands(this.hands);
+		return copy;
 	}
 }

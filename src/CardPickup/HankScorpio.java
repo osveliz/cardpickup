@@ -54,7 +54,7 @@ public class HankScorpio extends Player{
     	oppNode = opponentNode;
     	if(opponentPickedUp) {
             oppLastCard = c;
-            graph[opponentNode].clearPossibleCards();
+            nodes[opponentNode].clearPossibleCards();
         }
     	else
     		oppLastCard = null;
@@ -71,7 +71,7 @@ public class HankScorpio extends Player{
         this.currentNode = currentNode;
         if(c!=null) {
             addCardToHand(c);
-            graph[currentNode].clearPossibleCards();
+            nodes[currentNode].clearPossibleCards();
         }
 
     }
@@ -80,9 +80,9 @@ public class HankScorpio extends Player{
      * Player logic goes here
      */
 	public Action makeAction() {
-		int[] sums = new int[graph[currentNode].getNeighborAmount()];
+		int[] sums = new int[nodes[currentNode].getNeighborAmount()];
         for(int i = 0; i < sums.length; i++){
-            ArrayList<Card> possible = graph[currentNode].getNeighbor(i).getPossibleCards();
+            ArrayList<Card> possible = nodes[currentNode].getNeighbor(i).getPossibleCards();
             if(possible.size()!=0){
                 for(int j = 0; j < possible.size(); j++)
                     if(possible.get(j).getRank()==1)//ace
@@ -95,14 +95,12 @@ public class HankScorpio extends Player{
         for(int k = 1; k < sums.length; k++)
             if(sums[maxIndex] < sums[k])
                 maxIndex = k;
-        if(graph[currentNode].getNeighbor(maxIndex).getPossibleCards().size()==0) {
+        if(nodes[currentNode].getNeighbor(maxIndex).getPossibleCards().size()==0) {
             Random r = new Random();
-            //int neighbor = graph[currentNode].getNeighbor(maxIndex).getNodeID();
-            int neighbor = graph[currentNode].getNeighbor(r.nextInt(graph[currentNode].getNeighborAmount())).getNodeID();
+            int neighbor = nodes[currentNode].getNeighbor(r.nextInt(nodes[currentNode].getNeighborAmount())).getNodeID();
             return new Action(ActionType.MOVE, neighbor);
         }
-        int neighbor = graph[currentNode].getNeighbor(maxIndex).getNodeID();
+        int neighbor = nodes[currentNode].getNeighbor(maxIndex).getNodeID();
 		return new Action(ActionType.PICKUP, neighbor);
 	}
-
 }

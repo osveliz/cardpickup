@@ -76,10 +76,10 @@ public class TestPlayer extends Player{
 	public Action makeAction() {
 		Random r = new Random();
         int neighbor;
-        if (graph[currentNode].getNeighborAmount()==1)
-            neighbor = graph[currentNode].getNeighbor(0).getNodeID();
+        if (nodes[currentNode].getNeighborAmount()==1)
+            neighbor = nodes[currentNode].getNeighbor(0).getNodeID();
         else
-		    neighbor = graph[currentNode].getNeighbor(r.nextInt(graph[currentNode].getNeighborAmount())).getNodeID();
+		    neighbor = nodes[currentNode].getNeighbor(r.nextInt(nodes[currentNode].getNeighborAmount())).getNodeID();
 		return new Action(ActionType.PICKUP, neighbor);
 	}
 
