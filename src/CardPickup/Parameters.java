@@ -25,7 +25,24 @@ public class Parameters {
     /**Time limit for making an action in milliseconds*/
     public int ACTION_TIME = 500;
     
+    /**
+     * Default constructor
+     */
     public Parameters(){}
+    
+    /**
+     * Specify values constructor
+     * @param nodes number of nodes
+     * @param max max neighbors
+     * @param min min neighbors
+     * @param cards number of cards
+     * @param bud budget
+     * @param weight maximum weight
+     * @param init initialization timer
+     * @param result result timer
+     * @param opp opponent update timer
+     * @param action action timer
+     */
     public Parameters(int nodes, int max, int min, int cards, int bud, int weight, int init, int result, int opp, int action){
 		NUMBER_OF_NODES = nodes;
 		MAX_NEIGHBORS = max;
@@ -38,6 +55,10 @@ public class Parameters {
 		OPP_RESULT_TIME = opp;
 		ACTION_TIME = action;
 	}
+	/**
+	 * clones the parameters
+	 * @return a clone
+	 */
 	public Parameters clone(){
 		return new Parameters(NUMBER_OF_NODES,
 								MAX_NEIGHBORS,

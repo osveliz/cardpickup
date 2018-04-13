@@ -31,6 +31,7 @@ public class Graph {
 	/**
 	 * Constructor used by Game master to initialize graph.
 	 * @param graphName An integer indicates graph name
+	 * @param param the parameters
 	 */
 	public Graph(int graphName, Parameters param){
 		p = param;
@@ -56,6 +57,7 @@ public class Graph {
 	/**
 	 * set the adjacency matrix
 	 * @param matrix the matrix to copy
+	 * @param ns the nodes to copy
 	 */
 	public void setMatrix(int[][] matrix, Node[] ns){
 		adjacencyMatrix = new int[matrix.length][matrix.length];
@@ -92,7 +94,7 @@ public class Graph {
 	/**
 	 * 1 for player 1
 	 * 2 for player 2
-	 * @param player
+	 * @param player player number 1 or 2
 	 * @return player's hand
 	 */
 	public Hand getHand(int player){
@@ -126,7 +128,6 @@ public class Graph {
 	 * Returns boolean validating a node to be eligible for Neighbor or not
 	 * @param currentIndex An integer indicates current node id
 	 * @param neighborIndex An integer indicates neighbor node id
-	 * @param adjacencyMatrix A two dimensional array for adjacency
 	 * @return boolean True/False validating a node to be eligible for Neighbor or not
 	 */
 	public boolean isAllowedToBeNeighbor(int currentIndex, int neighborIndex){
@@ -421,6 +422,9 @@ public class Graph {
         return playerGraph;
 	}
 	
+	/**
+	 * Obfuscate the graph for the player
+	 */
 	public void hide(){
 		Random r = new Random();
 		for(int i = 0; i < nodes.length; i++){

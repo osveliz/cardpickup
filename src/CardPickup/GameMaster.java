@@ -113,12 +113,11 @@ public class GameMaster {
 
 	/**
 	 * Initializes each player and each player profile with all the relevant knowledge needed to start a game
-	 * @param g copy of graph
 	 * @param p1Profile profile for player 1
 	 * @param p1 player 1
 	 * @param p2Profile profile for player 2
 	 * @param p2 player 2
-	 * @param gameSeed seed for the game
+	 * @param g copy of graph
 	 */
 	public static void initializePlayers(PlayerProfile p1Profile, Player p1, PlayerProfile p2Profile, Player p2, Graph g){
 		//Player 1
@@ -127,9 +126,7 @@ public class GameMaster {
 		Graph hidden2 = g.clone();
 		hidden1.hide();
 		p1.setGraph(hidden1);
-		//System.out.println("before "+p1Profile.getCurrentHand().toString());
 		p1Profile.setCurrentHand(g.getHand(1));//player 1
-		//System.out.println("after "+p1Profile.getCurrentHand().toString());
 		p1Profile.setCurrentLocation(0);
 		p1.setHand(g.getHand(1));
 		p1.setCurrentNode(p1Profile.getCurrentLocation());
@@ -137,13 +134,10 @@ public class GameMaster {
 		//Player 2
 		hidden2.hide();
 		p2.setGraph(hidden2);
-		//System.out.println("before "+p2Profile.getCurrentHand().toString());
 		p2Profile.setCurrentHand(g.getHand(2));
-		//System.out.println("after "+p2Profile.getCurrentHand().toString());
 		p2Profile.setCurrentLocation(1);
 		p2.setHand(g.getHand(2));
 		p2.setCurrentNode(p2Profile.getCurrentLocation());
-
 
 		//Notify players of their opponent
 		p1.setOpponentNode(p2Profile.getCurrentLocation());	//subject to change
@@ -247,38 +241,31 @@ public class GameMaster {
 		while(!p1Finished && !p2Finished){
 			//Checks if player 1 is finished, if not, has him/her make one move, then registers the turn the gamemaster and both players
 			if(p1Profile.getHandSize() < 5){
-				//oneTurn(p1);
 				tryPlayer(new PlayerDriver(PlayerState.MAKE_ACTION, p1)); //Try to have player 1 make an action
 				registerTurn(p1Profile, p1, p2);
-				//p1Finished = false;
-			} else
+			}
+			else
 				p1Finished = true;
 
 			//Checks if player 2 is finished, if not, has him/her make one move, then registers the turn the gamemaster and both players
 			if(p2Profile.getHandSize() < 5){
-				//oneTurn(p2);
 				tryPlayer(new PlayerDriver(PlayerState.MAKE_ACTION, p2)); //Try to have player 1 make an action
 				registerTurn(p2Profile, p2, p1);
 				//p2Finished = false;
-			} else
+			}
+			else
 				p2Finished = true;
 
 			if(verbose)System.out.println("Player 1's Hand: " + p1Profile.getCurrentHand());
 			if(verbose)System.out.println("Player 2's Hand: " + p2Profile.getCurrentHand());
 			if(verbose)System.out.println("Round " + (i++) + " finished");
 			if(verbose)System.out.println();
-
-			//if(p1Finished && p2Finished)
-				//break;
 		}
 	}
 
 	/**
 	 * Runs a specified number of matches on the same graph against two players. One match is
 	 * considered 2 rounds where the second round reverses the locations and hands of the 2 players.
-
-	 * @param gameSeed number representing the seed used to generate the graph
-	 * @param g game graph
 	 * @param p1Name The player that will act first in the first round of a match (will act as player 2 in the second round)
 	 * @param p2Name The player that will act second in the first round of a match (will act as player 1 in the first round)
 	 * @return the hands
@@ -372,9 +359,8 @@ public class GameMaster {
 	}
 	/**
 	 * Generates graphs
-	 * 
-	 * @param numGraphs
-	 *            the number of graphs to generate
+	 * @param numGraphs the number of graphs to generate
+	 * @return the generated graphs stored in an array
 	 */
 	public static Graph[] generateGraphs(int numGraphs) {
 		Graph[] graphs = new Graph[numGraphs];
@@ -387,7 +373,6 @@ public class GameMaster {
 		}
 		return graphs;
 	}
-
 
 	/**
 	 * Sets new parameters based on a case x
@@ -438,6 +423,7 @@ public class GameMaster {
 				p.BUDGET = 100;
 				break;
 			default://whatever the default p are
+				p = new Parameters();
 				break;
 		}
 	}
