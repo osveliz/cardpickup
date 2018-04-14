@@ -19,7 +19,7 @@ import java.util.Random;
 public class Node 
 {
 	private int nodeID;
-    public ArrayList<Node> neighbor = new ArrayList<Node>();
+    public ArrayList<Node> neighbor;
     private Card trueCard;
     private ArrayList<Card> possibleCards;
     
@@ -28,6 +28,7 @@ public class Node
      */
 	public Node(){
 		possibleCards = new ArrayList<Card>();
+		neighbor = new ArrayList<Node>();
 	}
 	
 	/**
@@ -37,6 +38,7 @@ public class Node
 	public Node(int id){
 		nodeID = id;
 		possibleCards = new ArrayList<Card>();
+		neighbor = new ArrayList<Node>();
 	}
 
     /**
@@ -48,6 +50,7 @@ public class Node
         nodeID = id;
         trueCard = c;
         possibleCards = new ArrayList<Card>();
+        neighbor = new ArrayList<Node>();
     }
 
     /**
@@ -65,14 +68,14 @@ public class Node
             trueCard = new Card();
             possibleCards = new ArrayList<Card>();
         }
+        neighbor = new ArrayList<Node>();
     }
 
 	/**
      * Returns the nodeId
      * @return the nodeId
      */
-	public int getNodeID()
-	{
+	public int getNodeID(){
 		return nodeID;
 	}
 
@@ -80,8 +83,7 @@ public class Node
      * Sets the nodeId
      * @param nodeID the new node ID
      */
-	public void setNodeID(int nodeID)
-	{
+	public void setNodeID(int nodeID){
 		this.nodeID = nodeID;
 	}
 	
@@ -97,8 +99,7 @@ public class Node
      * Add Neighbor to the current node
      * @param neighborNode neighbor node which will the added as a neighbor to the current node
      */
-	public void addNeighbor(Node neighborNode)
-	{
+	public void addNeighbor(Node neighborNode){
 		if(!neighbor.contains(neighborNode)){
             this.neighbor.add(neighborNode);
 		}
@@ -109,8 +110,7 @@ public class Node
      * @param idx the index in the list of neighbors
      * @return Node of idx
      */
-	public Node getNeighbor(int idx)
-	{
+	public Node getNeighbor(int idx){
 		return neighbor.get(idx);
 	}
 	
@@ -118,9 +118,15 @@ public class Node
      * Returns the neighbor
      * @return Node of idx
      */
-	public ArrayList<Node> getNeighborList()
-	{
+	public ArrayList<Node> getNeighborList(){
 		return neighbor;
+	}
+	
+	/**
+	 * Clear the neighbors
+	 */
+	public void clearNeighbors(){
+		neighbor = new ArrayList<Node>();
 	}
 	
 	/**
@@ -141,6 +147,10 @@ public class Node
         addPossible(c);
     }
     
+    /**
+     * Set the true card
+     * @param c card to set
+     */
     public void setTrueCard(Card c){
 		trueCard = c;
 	}

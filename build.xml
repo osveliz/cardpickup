@@ -34,7 +34,7 @@
     
     <target name="doc" depends="" description="generate documentation">
 		<mkdir dir="${doc.dir}"/>
-		<javadoc sourcepath="${src.dir}" destdir="${doc.dir}" classpathref="classpath"/>
+		<javadoc sourcepath="${src.dir}" destdir="${doc.dir}" classpathref="classpath" additionalparam="-html5"/>
 	</target>
 
     <target name="run" depends="jar">

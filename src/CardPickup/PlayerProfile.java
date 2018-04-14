@@ -93,7 +93,7 @@ public class PlayerProfile {
 	
 	/**
 	 * Set budget
-	 * @param b
+	 * @param b budget
 	 */
 	public void setBudget(int b){
 		budget = b;
@@ -109,10 +109,17 @@ public class PlayerProfile {
 	
 	/**
 	 * Subtract from budget
-	 * @param b
+	 * @param b amount to subtract
 	 */
 	public void pay(int b){
 		budget -= b;
+	}
+	/**
+	 * Remove a card if it is there
+	 * @param c card
+	 */
+	public void remove(Card c){
+		currentHand.remove(c);
 	}
 	
 }

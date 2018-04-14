@@ -94,5 +94,4 @@ public class MaxPower extends Player{
         int neighbor = nodes[currentNode].getNeighbor(maxIndex).getNodeID();
 		return new Action(ActionType.PICKUP, neighbor);
 	}
-
 }

@@ -173,14 +173,17 @@ public class GameMaster {
 			currentPlayer.setBudget(-1);
 			return;
 		}
+		if(a.move == ActionType.BURN){
+			if(verbose)System.out.println(currentPlayer.getName() + " removed "+a.card);
+			cpProfile.remove(a.card);
+			currentPlayer.remove(a.card);
+			cpProfile.pay(5);
+			currentPlayer.setBudget(cpProfile.getBudget());
+			return;
+		}
         int di1,di2;
 		if(isValidMove(cpProfile.getCurrentLocation(), a.nodeID) && cpProfile.getBudget()>0){
 			switch(a.move){
-			case END:
-				if(verbose)System.out.println(currentPlayer.getName() + " Ended");
-				cpProfile.setBudget(-1);
-				currentPlayer.setBudget(-1);
-				break;
 			case MOVE:
 				di1 = cpProfile.getCurrentLocation();
 				di2 = a.nodeID;
@@ -274,14 +277,15 @@ public class GameMaster {
 	 * @return Rather the move is valid or not
 	 */
 	private static boolean isValidMove(int playerLocation, int playerDestination){
-		Node[] graph = currentGame.getNodes();
+		/*Node[] graph = currentGame.getNodes();
 		if(playerLocation == playerDestination)
 			return true;
 		for(int i = 0; i < graph[playerLocation].getNeighborAmount(); i++){
 			if(graph[playerLocation].getNeighbor(i).getNodeID() == playerDestination)
 				return true;
 		}
-		return false;
+		return false;*/
+		return currentGame.cost(playerLocation, playerDestination) > 0;
 	}
 
 	/**
@@ -300,12 +304,8 @@ public class GameMaster {
 		initializePlayers(p1Profile, p1, p2Profile, p2,g);
 		boolean p1Finished = false;
 		boolean p2Finished = false;
-		//Runs until both players have a full hand or are out of turns
-		//for(int i = 0; i < 1000; i++){
 		int i = 0;
-		while(!p1Finished && !p2Finished){
-			//Checks if player 1 is finished, if not, has him/her make one move, then registers the turn the gamemaster and both players
-			//if(p1Profile.getHandSize() < 5){
+		while(!p1Finished || !p2Finished){
 			if(p1Profile.getBudget()>0){
 				tryPlayer(new PlayerDriver(PlayerState.MAKE_ACTION, p1)); //Try to have player 1 make an action
 				registerTurn(p1Profile, p1, p2);
@@ -313,12 +313,9 @@ public class GameMaster {
 			else
 				p1Finished = true;
 
-			//Checks if player 2 is finished, if not, has him/her make one move, then registers the turn the gamemaster and both players
-			//if(p2Profile.getHandSize() < 5){
 			if(p2Profile.getBudget()>0){
 				tryPlayer(new PlayerDriver(PlayerState.MAKE_ACTION, p2)); //Try to have player 1 make an action
 				registerTurn(p2Profile, p2, p1);
-				//p2Finished = false;
 			}
 			else
 				p2Finished = true;

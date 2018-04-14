@@ -27,8 +27,7 @@ public abstract class Player
     /**
      * Default Constructor
      */
-    public Player()
-    {
+    public Player(){
         //turnsRemaining = Parameters.NUM_TURNS;
     }
 
@@ -88,6 +87,7 @@ public abstract class Player
     public void setGraph(Graph g){
 		graph = g;
 		nodes = g.getNodes();
+		g.resetNeighbors();
 	}
 	
 	/**
@@ -167,6 +167,9 @@ public abstract class Player
 			case END:
 				lastAction = a;
 				break;
+			case BURN:
+				lastAction = a;
+				break;
             case MOVE:
             	if(isValidAction(a)){
             		move(a.nodeID);
@@ -174,6 +177,8 @@ public abstract class Player
             	}
             	break;
             case PICKUP:
+				if(hand.size() == 5)
+					lastAction = null;//cannot pickup a card if you already have 5
             	if(isValidAction(a)){
             		pickup(a.nodeID);
             		lastAction = new Action(a.move, a.nodeID);
@@ -241,5 +246,9 @@ public abstract class Player
 				return true;
 		}
 		return false;
+	}
+	
+	public void remove(Card c){
+		hand.remove(c);
 	}
 }

@@ -80,7 +80,6 @@ public class HankScorpio extends Player{
      * Player logic goes here
      */
 	public Action makeAction() {
-		System.out.println(hand.toString());
 		if(hand.size()==5)
 			return new Action();//end
 		int[] sums = new int[nodes[currentNode].getNeighborAmount()];

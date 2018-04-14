@@ -1,6 +1,7 @@
 package CardPickup;
 
 import java.util.Random;
+import java.util.ArrayList;
 
 /**
  * Some important variables inherited from the Player Class:
@@ -29,7 +30,7 @@ import java.util.Random;
  */
 public class TestPlayer extends Player{
 	protected final String newName = "TestPlayer"; //Overwrite this variable in your player subclass
-
+	private boolean burnt;
 	/**Do not alter this constructor as nothing has been initialized yet. Please use initialize() instead*/
 	public TestPlayer() {
 		super();
@@ -38,6 +39,7 @@ public class TestPlayer extends Player{
 	
 	public void initialize() {
 		//WRITE ANY INITIALIZATION COMPUTATIONS HERE
+		burnt = false;
 	}
 	
 	/**
@@ -74,16 +76,22 @@ public class TestPlayer extends Player{
      * Player logic goes here
      */
 	public Action makeAction() {
-		/*if(hand.size()==5)
-			return new Action();//end
 		Random r = new Random();
+		if(hand.size()==5 && !burnt){
+			burnt = true;
+			return new Action(hand.getHoleCard(r.nextInt(5)));
+		}
+		else if(hand.size()==5){
+			return new Action();//end
+		}
+		
         int neighbor;
-        if (nodes[currentNode].getNeighborAmount()==1)
-            neighbor = nodes[currentNode].getNeighbor(0).getNodeID();
+        ArrayList<Node> neighbors = nodes[currentNode].getNeighborList();
+        if (neighbors.size()==1)
+            neighbor = neighbors.get(0).getNodeID();
         else
-		    neighbor = nodes[currentNode].getNeighbor(r.nextInt(nodes[currentNode].getNeighborAmount())).getNodeID();
-		return new Action(ActionType.PICKUP, neighbor);*/
-		return new Action(ActionType.END, -1);
+		    neighbor = neighbors.get(r.nextInt(neighbors.size())).getNodeID();
+		return new Action(ActionType.PICKUP, neighbor);
 	}
 
 }

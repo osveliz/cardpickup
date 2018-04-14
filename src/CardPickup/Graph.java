@@ -444,8 +444,7 @@ public class Graph {
 				for(int j = 0; j < 17; j++){//17 shuffles
 					Card c = possible.remove(0);
 					possible.add(r.nextInt(possible.size()),c);
-				}
-			
+				}			
 		}
 		
 	}
@@ -530,15 +529,28 @@ public class Graph {
 				adjacencyMatrix[id][xid] = 1;
 			}
 		}
-		
 		for(int i = 0; i < n; i++){
 			for(int j = 0; j < n; j++){
 				if(adjacencyMatrix[i][j] <= 0)
 					adjacencyMatrix[i][j] = -1;//cannot connect
-				else if(i <= j)
-					adjacencyMatrix[i][j] = r.nextInt(max)+1;
-				else
-					adjacencyMatrix[i][j] = adjacencyMatrix[j][i];
+				else{
+					if(i <= j)
+						adjacencyMatrix[i][j] = r.nextInt(max)+1;
+					else
+						adjacencyMatrix[i][j] = adjacencyMatrix[j][i];
+				}
+			}
+		}
+		resetNeighbors();
+	}
+	
+	public void resetNeighbors(){
+		int n = p.NUMBER_OF_NODES;
+		for(int i = 0; i < n; i++){
+			nodes[i].clearNeighbors();
+			for(int j = 0; j < n; j++){
+				if(adjacencyMatrix[i][j] > 0)
+					nodes[i].addNeighbor(nodes[j]);
 			}
 		}
 	}
@@ -567,5 +579,15 @@ public class Graph {
 		copy.setCards(this.nodes);
 		copy.setHands(this.hands);
 		return copy;
+	}
+	
+	/**
+	 * Cost between nodes
+	 * @param id1 node id 1
+	 * @param id2 node id 2
+	 * @return -1 if not connected, otherwise the cost
+	 */
+	public int cost(int id1, int id2){
+		return adjacencyMatrix[id1][id2];
 	}
 }

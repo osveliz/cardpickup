@@ -182,4 +182,15 @@ public class Hand {
     public int size(){
         return cardsHole.size()+cardsShared.size()+cardsUp.size();
     }
+    
+    /**
+     * Remove this card
+     * @param c card
+     */
+    public void remove(Card c){
+		for(int i = 0; i < cardsHole.size();i++)
+			if(((Card)cardsHole.get(i)).getRank() == c.getRank() &&
+				((Card)cardsHole.get(i)).getSuit() == c.getSuit())
+				cardsHole.remove(i);
+	}
 }

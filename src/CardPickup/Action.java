@@ -9,6 +9,7 @@ public class Action {
 
 	public ActionType move;
 	public int nodeID;
+	public Card card;
 	
 	/**
 	 * End Action
@@ -26,6 +27,14 @@ public class Action {
 	public Action(ActionType move, int nodeID){
 		this.move = move;
 		this.nodeID = nodeID;
+	}
+	/**
+	 * Burn a card - costs 5 from budget
+	 * @param card card you want to remove
+	 */
+	public Action(Card card){
+		this.move = ActionType.BURN;
+		this.card = card;
 	}
 
     /**
