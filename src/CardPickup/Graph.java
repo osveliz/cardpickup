@@ -443,7 +443,10 @@ public class Graph {
 			if(possible.size()>0)
 				for(int j = 0; j < 17; j++){//17 shuffles
 					Card c = possible.remove(0);
-					possible.add(r.nextInt(possible.size()),c);
+					if(possible.size()!=0)
+						possible.add(r.nextInt(possible.size()),c);
+					else
+						possible.add(c);
 				}			
 		}
 		

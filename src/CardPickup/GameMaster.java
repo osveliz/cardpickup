@@ -78,7 +78,7 @@ public class GameMaster {
 		System.out.println("\nTotal Wins");
 		for(int i = 0; i < wins.length; i++)
 			System.out.println(players.get(i).getName()+" "+wins[i]);
-		System.out.println("\nCumulative Hand Ranks");
+		System.out.println("\nCumulative Hand Rank Differentials");
 		for(int i = 0; i < ranks.length; i++)
 			System.out.println(players.get(i).getName()+" "+ranks[i]);
 		System.exit(0);//just to make sure it exits
@@ -404,11 +404,13 @@ public class GameMaster {
 			if (rank1 > rank2)//p1 wins
 			{//p1 wins
 				wins[p1]++;
+				ranks[p1] += rank1 - rank2;
 				if (verbose)
 					System.out.println(players.get(p1).getName()+" wins with " + HandEvaluator.nameHand(rank1) +
 							" against "+players.get(p2).getName()+" " + HandEvaluator.nameHand(rank2));
 			} else if (rank1 < rank2) {//p2 wins
 				wins[p2]++;
+				ranks[p2] += rank2 - rank1;
 				if (verbose)
 					System.out.println(players.get(p1).getName()+" lost with " + HandEvaluator.nameHand(rank1) +
 							" against "+players.get(p2).getName()+" " + HandEvaluator.nameHand(rank2));
@@ -419,8 +421,8 @@ public class GameMaster {
 					System.out.println(players.get(p1).getName()+" drew with " + HandEvaluator.nameHand(rank1) +
 							" against "+players.get(p2).getName()+" " + HandEvaluator.nameHand(rank2));
 			}
-			ranks[p1] += rank1;
-			ranks[p2] += rank2;
+			//ranks[p1] += rank1;
+			//ranks[p2] += rank2;
 		}
 	}
 	/**
