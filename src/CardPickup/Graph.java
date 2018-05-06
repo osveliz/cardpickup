@@ -586,7 +586,7 @@ public class Graph {
 	 */
 	public Graph clone(){
 		Graph copy = new Graph(name, p);
-		copy.generateGraph();
+		//copy.generateGraph();
 		copy.setParameters(p.clone());
 		copy.setName(this.fullGraphName+"");
 		copy.setMatrix(this.adjacencyMatrix, this.nodes);
