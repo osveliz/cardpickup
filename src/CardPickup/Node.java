@@ -161,7 +161,7 @@ public class Node
      */
     public Card getCard(){
 		if (trueCard!=null)
-			return new Card(trueCard.toString());
+			return new Card(trueCard);
 		else{
 			System.out.println("null true");
 			return new Card();

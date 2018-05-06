@@ -101,6 +101,16 @@ public class Card implements Comparable {
         }
         //loadImage();
     }
+    
+    /**
+     * basic constructor for copying cards
+     * @param c card to copy
+     *
+     */
+    public Card(Card c){
+		rank = c.getRank();
+		suit = c.getSuit();
+	}
 
 /***************************
  * A Card class can be created by specifying the string description of the Card.

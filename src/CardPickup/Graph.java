@@ -64,11 +64,15 @@ public class Graph {
 		for(int i = 0; i < matrix.length; i++)
 			for(int j = 0; j < matrix[i].length; j++)
 				adjacencyMatrix[i][j] = matrix[i][j];
-		//printMatrix();
 		nodes = new Node[matrix.length];
 		for(int n = 0; n < nodes.length; n++){
 			nodes[n] = new Node(n);
-			nodes[n].setTrueCard(new Card(ns[n].getCard().toString()));
+			if(ns[n].getCard()!=null)
+				if(ns[n].getCard().getRank()==Card.BAD_CARD)
+					nodes[n].setTrueCard(new Card());
+				else
+					nodes[n].setTrueCard(new Card(ns[n].getCard()));
+			
 		}
 		for(int n = 0; n < nodes.length; n++)
 			for(int k = 0; k < matrix.length; k++)
@@ -437,8 +441,10 @@ public class Graph {
 	 */
 	public void hide(){
 		Random r = new Random();
+		//Card badCard = new Card();//default bad card
 		for(int i = 0; i < nodes.length; i++){
-			nodes[i].clearCard();
+			//nodes[i].clearCard();
+			nodes[i].setTrueCard(new Card());
 			ArrayList<Card> possible = nodes[i].getPossibleCards();
 			if(possible.size()>0)
 				for(int j = 0; j < 17; j++){//17 shuffles
@@ -478,15 +484,20 @@ public class Graph {
 			System.out.println("error");
 			return;
 		}
-			
 		for(int n = 0; n < nodes.length; n++){
 			if(newNodes[n] == null){
 				System.out.println("danger");
 				return;
 			}
-			if(newNodes[n].getCard()==null)
-				return;
-			nodes[n].setTrueCard(new Card(newNodes[n].getCard().toString()));
+			if(newNodes[n].getCard()!=null){
+				//System.out.println("a");
+				Card nCard = newNodes[n].getCard();
+				if(nCard.getRank()!=Card.BAD_CARD)
+					nodes[n].setTrueCard(new Card(nCard.getRank(),nCard.getSuit()));
+				else
+					nodes[n].setTrueCard(new Card());
+			}
+				//System.out.println("b");
 			ArrayList<Card> cards = newNodes[n].getPossibleCards();
 			for(int k = 0; k < cards.size(); k++)
 				nodes[n].addPossible(new Card(cards.get(k).toString()));
