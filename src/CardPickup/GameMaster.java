@@ -337,7 +337,7 @@ public class GameMaster {
 	 * @return the hands
 	 */
 	public static Hand[] runMatches(String p1Name, String p2Name){
-		Graph g = currentGame.clone();
+		Graph backup = currentGame.clone();
 		Hand[] hands = new Hand[4];//4 hands p1 & p2 vs p2 and p1
 		if(getPlayer(p1Name) == null || getPlayer(p2Name) == null){//make sure players are valid
 			System.out.println("ERROR: CHECK THAT PLAYER NAMES ARE VALID");
@@ -360,6 +360,7 @@ public class GameMaster {
 		//Exact same code as above, but reverses the roles of player 1 and player 2//
 		/////////////////////////////////////////////////////////////////////////////
 		//Game initialization
+		currentGame = backup;
 		p1 = getPlayer(p2Name);
 		p2 = getPlayer(p1Name);
 
